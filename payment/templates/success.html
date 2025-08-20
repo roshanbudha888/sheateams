@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Successful{% endblock %}
+
+{% block content %}
+<div class="page-container payment-success">
+    <div class="success-card">
+        <i class="fas fa-check-circle success-icon"></i>
+        <h1>Payment Successful!</h1>
+        <p>Your transaction has been completed successfully.</p>
+        <a href="{% url 'payment:payment' %}" class="btn">Back to Payments</a>
+    </div>
+</div>
+{% endblock %}

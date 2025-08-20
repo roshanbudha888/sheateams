@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Main Content Styles */
+    .content-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        position: relative;
+        height: 400px;
+        margin-bottom: 3rem;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .hero-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 2rem;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        color: white;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #ffd700;
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+        max-width: 600px;
+    }
+
+    /* Gallery Section */
+    .gallery-section {
+        margin: 3rem 0;
+    }
+
+    .gallery-title {
+        text-align: center;
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        color: #ffd700;
+        position: relative;
+    }
+
+    .gallery-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 150px;
+        height: 3px;
+        background: linear-gradient(to right, transparent, #ffd700, transparent);
+    }
+
+    .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        justify-items: center;
+    }
+
+    .gallery-item {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        width: 100%;
+        max-width: 300px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .animated-item {
+        opacity: 0;
+        animation: fadeInUp 0.5s forwards;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .image-container {
+        position: relative;
+        width: 100%;
+        height: 180px;
+        overflow: hidden;
+    }
+
+    .image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .gallery-item:hover .image-container img {
+        transform: scale(1.05);
+    }
+
+    .image-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        padding: 15px;
+        color: white;
+        text-align: center;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .gallery-item:hover .image-overlay {
+        background: rgba(0, 0, 0, 0.7);
+    }
+
+    .game-title {
+        font-size: 1.1rem;
+        margin: 15px 15px 5px;
+        color: #fff;
+        text-align: center;
+    }
+
+    .game-category {
+        font-size: 0.8rem;
+        margin: 0 15px 15px;
+        color: #ffd700;
+        opacity: 0.8;
+        text-align: center;
+    }
+
+    /* Promo Banner */
+    .promo-banner {
+        margin: 3rem 0;
+        padding: 2rem;
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .promo-image {
+        flex: 1;
+        max-width: 400px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .promo-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .promo-content {
+        flex: 2;
+    }
+
+    .promo-title {
+        font-size: 1.8rem;
+        color: #ffd700;
+        margin-bottom: 1rem;
+    }
+
+    .promo-text {
+        margin-bottom: 1.5rem;
+    }
+
+    .promo-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background: #ffd700;
+        color: #000;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .promo-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-section {
+            height: 300px;
+        }
+
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .promo-banner {
+            flex-direction: column;
+        }
+
+        .promo-image {
+            max-width: 100%;
+        }
+
+        .gallery {
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-section {
+            height: 250px;
+        }
+
+        .hero-title {
+            font-size: 1.5rem;
+        }
+
+        .gallery {
+            grid-template-columns: 1fr;
+        }
+        
+        .gallery-item {
+            max-width: 100%;
+        }
+    }
+</style>
+
+<div class="content-wrapper">
+    <!-- Hero Section with Main Image -->
+    <section class="hero-section">
+        <img class="hero-image" src="{% static 'img/win.webp' %}" alt="Game Hub Banner">
+        <div class="hero-content">
+            <h1 class="hero-title">Welcome to Our Game Hub</h1>
+            <p class="hero-subtitle">Play the hottest games and win amazing prizes!</p>
+        </div>
+    </section>
+
+    <!-- Promo Banner with Image -->
+    <section class="promo-banner">
+        <div class="promo-image">
+            <img src="{% static 'img/juwa777.jpeg' %}" alt="Special Promotion">
+        </div>
+        <div class="promo-content">
+            <h2 class="promo-title">Special Limited-Time Offer!</h2>
+            <p class="promo-text">Get double rewards on all your favorite games this week. Don't miss out on this exclusive opportunity to boost your winnings!</p>
+            <a href="#" class="promo-btn">Claim Your Bonus Now</a>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery-section">
+        <h2 class="gallery-title">Featured Games</h2>
+        <div class="gallery">
+            {% for game in games %}
+            <div class="gallery-item animated-item" style="animation-delay: {{ forloop.counter|divisibleby:10 }}s;">
+                <div class="image-container">
+                    <img src="{{ game.thumbnail.url }}" alt="{{ game.title }}">
+                    <div class="image-overlay">
+                        {% if user.is_authenticated %}
+                            <span>Play Now</span>
+                        {% else %}
+                            <span>Login to Play</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <h3 class="game-title">{{ game.title }}</h3>
+                <p class="game-category">{{ game.category }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate gallery items
+        const animatedItems = document.querySelectorAll('.animated-item');
+        animatedItems.forEach(item => {
+            item.style.animationPlayState = 'running';
+        });
+        
+        // Add hover effect to promo button
+        const promoBtn = document.querySelector('.promo-btn');
+        if (promoBtn) {
+            promoBtn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+                this.style.boxShadow = '0 5px 15px rgba(255, 215, 0, 0.4)';
+            });
+            promoBtn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+        }
+    });
+</script>
+
+{% endblock %}

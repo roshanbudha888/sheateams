@@ -1,0 +1,32 @@
+/* Add custom styles to admin */
+
+#header {
+    background: #2c3e50;
+    color: white;
+}
+
+.module h2,
+.module caption,
+.inline-group h2 {
+    background: #3498db;
+}
+
+.button,
+input[type=submit],
+input[type=button],
+.submit-row input,
+a.button {
+    background: #3498db;
+}
+
+.button:active,
+input[type=submit]:active,
+input[type=button]:active,
+.button:focus,
+input[type=submit]:focus,
+input[type=button]:focus,
+.button:hover,
+input[type=submit]:hover,
+input[type=button]:hover {
+    background: #2980b9;
+}

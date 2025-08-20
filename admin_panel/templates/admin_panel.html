@@ -1,0 +1,80 @@
+{% extends 'base.html' %}  <!-- Extending your existing base template -->
+{% load static %}
+
+{% block content %}
+<div class="admin-container">
+    <!-- Admin Sidebar -->
+    <div class="admin-sidebar">
+        <div class="admin-brand">
+            <img src="{% static 'img/shea.jpg' %}" alt="Mrs. Shea Admin">
+            <h2>Mrs. Shea Admin</h2>
+        </div>
+        
+        <div class="admin-menu">
+            <a href="{% url 'admin:index' %}" class="admin-menu-item {% if request.path == '/admin/' %}active{% endif %}">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            
+            <div class="admin-menu-section">User Management</div>
+            <a href="{% url 'admin:auth_user_changelist' %}" class="admin-menu-item">
+                <i class="fas fa-users"></i> Users
+            </a>
+            <a href="{% url 'admin:auth_group_changelist' %}" class="admin-menu-item">
+                <i class="fas fa-user-shield"></i> Roles & Permissions
+            </a>
+            
+            <div class="admin-menu-section">Game Management</div>
+            <a href="{% url 'admin:games_game_changelist' %}" class="admin-menu-item">
+                <i class="fas fa-gamepad"></i> Games
+            </a>
+            <a href="{% url 'admin:games_category_changelist' %}" class="admin-menu-item">
+                <i class="fas fa-tags"></i> Categories
+            </a>
+            
+            <div class="admin-menu-section">Content</div>
+            <a href="{% url 'admin:pages_page_changelist' %}" class="admin-menu-item">
+                <i class="fas fa-file-alt"></i> Pages
+            </a>
+            <a href="{% url 'admin:blog_post_changelist' %}" class="admin-menu-item">
+                <i class="fas fa-blog"></i> Blog Posts
+            </a>
+            
+            <div class="admin-menu-section">Transactions</div>
+            <a href="{% url 'admin:payments_payment_changelist' %}" class="admin-menu-item">
+                <i class="fas fa-credit-card"></i> Payments
+            </a>
+            <a href="{% url 'admin:payments_transaction_changelist' %}" class="admin-menu-item">
+                <i class="fas fa-exchange-alt"></i> Transactions
+            </a>
+        </div>
+    </div>
+    
+    <!-- Admin Main Content -->
+    <div class="admin-main">
+        <div class="admin-header">
+            <div class="admin-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search...">
+            </div>
+            <div class="admin-user">
+                <img src="{% static 'img/admin-avatar.png' %}" alt="Admin">
+                <span>{{ request.user.username }}</span>
+                <div class="admin-user-dropdown">
+                    <a href="{% url 'admin:password_change' %}"><i class="fas fa-key"></i> Change Password</a>
+                    <a href="{% url 'admin:logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-content">
+            {% block admin_content %}
+            <!-- Content will be injected here -->
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/admin.js' %}"></script>
+{% endblock %}

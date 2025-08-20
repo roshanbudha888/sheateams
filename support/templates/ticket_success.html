@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Ticket Submitted{% endblock %}
+
+{% block content %}
+<div class="page-container ticket-success">
+    <div class="success-card">
+        <i class="fas fa-check-circle"></i>
+        <h1>Ticket Submitted Successfully!</h1>
+        <p>Your ticket <strong>#{{ ticket_id }}</strong> has been created.</p>
+        <p>Our support team will get back to you soon.</p>
+        <div class="action-buttons">
+            <a href="{% url 'support:support' %}" class="btn">Back to Support</a>
+            <a href="{% url 'home:shea_home' %}" class="btn btn-secondary">Return Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

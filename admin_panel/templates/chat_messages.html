@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block Content %}
+    {% for message in messages %}
+<div class="chat-message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+    {% if message.image %}
+    <img src="{{ message.image.url }}" alt="Chat image" style="max-width: 100%; max-height: 200px;">
+    {% endif %}
+    {% if message.message %}
+    <div>{{ message.message }}</div>
+    {% endif %}
+    <small class="d-block text-end text-muted">{{ message.timestamp|timesince }} ago</small>
+</div>
+{% endfor %}
+{% endblock %}
+    

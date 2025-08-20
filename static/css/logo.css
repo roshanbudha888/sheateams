@@ -1,0 +1,224 @@
+ * {
+     margin: 0;
+     padding: 0;
+     box-sizing: border-box;
+ }
+ 
+ body {
+     font-family: 'Poppins', sans-serif;
+     background: linear-gradient(135deg, #1a1a2e, #16213e);
+     height: 100vh;
+     overflow: hidden;
+     color: white;
+     position: relative;
+ }
+ /* Rain container */
+ 
+ .rain-container {
+     position: fixed;
+     top: 0;
+     left: 0;
+     width: 100%;
+     height: 100%;
+     z-index: 1;
+     overflow: hidden;
+ }
+ 
+ .raindrop {
+     position: absolute;
+     width: 2px;
+     height: 15px;
+     background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), transparent);
+     border-radius: 0 0 50% 50%;
+     animation: fall linear infinite;
+     z-index: 1;
+ }
+ 
+ @keyframes fall {
+     to {
+         transform: translateY(100vh);
+     }
+ }
+ /* Main container */
+ 
+ .container {
+     position: relative;
+     z-index: 2;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     height: 100vh;
+     padding: 20px;
+ }
+ /* Logo card */
+ 
+ .logo-card {
+     background: rgba(255, 255, 255, 0.1);
+     backdrop-filter: blur(10px);
+     border-radius: 15px;
+     padding: 40px;
+     text-align: center;
+     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+     border: 1px solid rgba(255, 255, 255, 0.1);
+     max-width: 500px;
+     width: 100%;
+     animation: fadeIn 1s ease-in-out;
+     transition: all 0.3s ease;
+ }
+ 
+ @keyframes fadeIn {
+     from {
+         opacity: 0;
+         transform: translateY(20px);
+     }
+     to {
+         opacity: 1;
+         transform: translateY(0);
+     }
+ }
+ /* Logo image */
+ 
+ .logo-img {
+     margin-bottom: 20px;
+ }
+ 
+ .logo-img img {
+     width: 150px;
+     height: 150px;
+     border-radius: 50%;
+     object-fit: cover;
+     border: 3px solid rgba(255, 255, 255, 0.2);
+     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+     transition: transform 0.3s ease;
+ }
+ 
+ .logo-img img:hover {
+     transform: scale(1.05);
+ }
+ /* Title */
+ 
+ h2 {
+     font-size: 2.5rem;
+     margin-bottom: 30px;
+     font-weight: 600;
+     color: #fff;
+     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+ }
+ /* Enter button */
+ 
+ .enter-btn {
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     padding: 14px 40px;
+     background: linear-gradient(45deg, #4e54c8, #8f94fb);
+     color: white;
+     text-decoration: none;
+     border-radius: 50px;
+     font-weight: 500;
+     transition: all 0.3s ease;
+     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+     font-size: 1.1rem;
+     border: none;
+     cursor: pointer;
+     position: relative;
+     overflow: hidden;
+ }
+ 
+ .enter-btn i {
+     margin-left: 8px;
+     transition: transform 0.3s ease;
+ }
+ 
+ .enter-btn:hover {
+     background: linear-gradient(45deg, #4348a8, #7a7fd9);
+     transform: translateY(-3px);
+     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+ }
+ 
+ .enter-btn:hover i {
+     transform: translateX(5px);
+ }
+ 
+ .enter-btn:active {
+     transform: translateY(1px);
+ }
+ 
+ .enter-btn::after {
+     content: '';
+     position: absolute;
+     top: 0;
+     left: 0;
+     width: 100%;
+     height: 100%;
+     background: rgba(255, 255, 255, 0.1);
+     transform: translateX(-100%);
+     transition: transform 0.3s ease;
+ }
+ 
+ .enter-btn:hover::after {
+     transform: translateX(100%);
+ }
+ /* Footer */
+ 
+ .footer {
+     position: absolute;
+     bottom: 20px;
+     left: 0;
+     width: 100%;
+     text-align: center;
+     font-size: 0.9rem;
+     color: rgba(255, 255, 255, 0.6);
+     z-index: 3;
+ }
+ /* Responsive styles */
+ 
+ @media only screen and (max-width: 768px) {
+     .logo-card {
+         padding: 30px;
+         max-width: 400px;
+     }
+     .logo-img img {
+         width: 120px;
+         height: 120px;
+     }
+     h2 {
+         font-size: 2rem;
+         margin-bottom: 25px;
+     }
+     .enter-btn {
+         padding: 12px 30px;
+         font-size: 1rem;
+     }
+ }
+ 
+ @media only screen and (max-width: 480px) {
+     .logo-card {
+         padding: 20px;
+     }
+     h2 {
+         font-size: 1.8rem;
+     }
+     .enter-btn {
+         padding: 10px 25px;
+         font-size: 0.9rem;
+     }
+ }
+ 
+ @media only screen and (min-width: 1200px) {
+     .logo-card {
+         max-width: 600px;
+         padding: 50px;
+     }
+     .logo-img img {
+         width: 180px;
+         height: 180px;
+     }
+     h2 {
+         font-size: 3rem;
+     }
+     .enter-btn {
+         padding: 16px 45px;
+         font-size: 1.2rem;
+     }
+ }

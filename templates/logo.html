@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mrs. Shea | Rain Shower Effect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/logo.css' %}">
+    <script src="{% static 'js/logo.js' %}"></script>
+
+</head>
+<body>
+    <!-- Rain shower effect container -->
+    <div class="rain-container" id="rainContainer"></div>
+
+    <div class="container">
+        <div class="logo-card">
+            <div class="logo-img">
+                <img src="{% static 'img/shea.jpg' %}" alt="Mrs. Shea">
+            </div>
+            <h2>Mrs. Shea</h2>
+            <a href="{% url 'home:shea_home' %}" class="enter-btn">
+                Enter Here <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2023 Mrs. Shea | All Rights Reserved</p>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+         $(document).ready(function() {
+     // Create rain effect
+     function createRain() {
+         const rainContainer = document.getElementById('rainContainer');
+         const rainCount = 150; // Number of raindrops
+
+         for (let i = 0; i < rainCount; i++) {
+             const raindrop = document.createElement('div');
+             raindrop.classList.add('raindrop');
+
+             // Random position
+             const left = Math.random() * 100;
+             const top = Math.random() * -100;
+
+             // Random size
+             const width = Math.random() * 2 + 1;
+             const height = Math.random() * 20 + 10;
+
+             // Random fall duration
+             const duration = Math.random() * 1 + 0.5;
+
+             // Apply styles
+             raindrop.style.left = `${left}vw`;
+             raindrop.style.top = `${top}vh`;
+             raindrop.style.width = `${width}px`;
+             raindrop.style.height = `${height}px`;
+             raindrop.style.animationDuration = `${duration}s`;
+             raindrop.style.opacity = Math.random() * 0.5 + 0.3;
+
+             rainContainer.appendChild(raindrop);
+         }
+     }
+
+     // Initialize rain effect
+     createRain();
+
+     // Button hover effect enhancement
+     $('.enter-btn').hover(function() {
+         $(this).css('transform', 'translateY(-3px)');
+     }, function() {
+         $(this).css('transform', 'translateY(0)');
+     });
+ });
+    </script>
+</body>
+</html>

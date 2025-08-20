@@ -1,0 +1,219 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mrs. Shea |</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+</head>
+
+<body>
+{% block extra_css %}
+   {% endblock %}
+    <!-- Rain shower effect container -->
+    <div class="rain-container" id="rainContainer"></div>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="{% url 'logo' %}">
+                    <img src="{% static 'img/shea.jpg' %}" alt="Mrs. Shea">
+                    <span>Mrs. Shea</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="{% url 'home:shea_home' %}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="{% url 'games:games' %}" class="nav-link"><i class="fas fa-gamepad"></i> Games</a>
+                <a href="{% url 'rules:rules' %}" class="nav-link"><i class="fas fa-book"></i> Rules</a>
+                <a href="{% url 'payment:payment' %}" class="nav-link"><i class="fas fa-credit-card"></i> Payment</a>
+                <a href="{% url 'support:support' %}" class="nav-link"><i class="fas fa-question-circle"></i> Support</a>
+                <a href="{% url 'chat:chat' %}" class="nav-link"><i class="fas fa-comments"></i> Chat</a>
+                <a href="{% url 'accounts:profile' %}" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:logout' %}" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    <a href="{% url 'accounts:signup' %}" class="nav-link signup-btn"><i class="fas fa-user-plus"></i> Sign Up</a>
+                {% endif %}
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <a href="{% url 'home:shea_home' %}" class="mobile-nav-link"><i class="fas fa-home"></i> Home</a>
+        <a href="{% url 'games:games' %}" class="mobile-nav-link"><i class="fas fa-gamepad"></i> Games</a>
+        <a href="{% url 'rules:rules' %}" class="mobile-nav-link"><i class="fas fa-book"></i> Rules</a>
+        <a href="{% url 'payment:payment' %}" class="mobile-nav-link"><i class="fas fa-credit-card"></i> Payment</a>
+        <a href="{% url 'support:support' %}" class="mobile-nav-link"><i class="fas fa-question-circle"></i> Support</a>
+        <a href="{% url 'chat:chat' %}" class="mobile-nav-link"><i class="fas fa-comments"></i> Chat</a>
+        <a href="{% url 'accounts:profile' %}" class="mobile-nav-link"><i class="fas fa-user"></i> Profile</a>
+
+        {% if user.is_authenticated %}
+            <a href="{% url 'accounts:logout' %}" class="mobile-nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        {% else %}
+            <a href="{% url 'accounts:login' %}" class="mobile-nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+            <a href="{% url 'accounts:signup' %}" class="mobile-nav-link signup-btn"><i class="fas fa-user-plus"></i> Sign Up</a>
+        {% endif %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        {% block content %}
+    {% comment %} <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/support.css' %}">
+    <link rel="stylesheet" href="{% static 'css/rules.css' %}">
+    <link rel="stylesheet" href="{% static 'css/payment.css' %}">
+    <script src="{% static 'js/game.js' %}"></script> {% endcomment %}
+
+        {% endblock %}
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>Mrs. Shea is a premium gaming platform offering a variety of exciting games and a vibrant community.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'home:shea_home' %}">Home</a></li>
+                    <li><a href="{% url 'games:games' %}">Games</a></li>
+                    <li><a href="{% url 'rules:rules' %}">Rules</a></li>
+                    <li><a href="{% url 'accounts:profile' %}"> Profile</a></li>
+                    <li><a href="{% url 'payment:payment' %}">Payment</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="{% url 'support:support' %}">Help Center</a></li>
+                    <li><a href="{% url 'chat:chat' %}">Live Chat</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 Mrs. Shea. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Cookie Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    <script>
+        // Initialize rain effect
+        document.addEventListener('DOMContentLoaded', function() {
+            // Rain effect configuration
+            particlesJS('rainContainer', {
+                "particles": {
+                    "number": {
+                        "value": 150,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": "#ffffff"
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        },
+                        "polygon": {
+                            "nb_sides": 5
+                        }
+                    },
+                    "opacity": {
+                        "value": 0.5,
+                        "random": true,
+                        "anim": {
+                            "enable": false,
+                            "speed": 1,
+                            "opacity_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "size": {
+                        "value": 2,
+                        "random": true,
+                        "anim": {
+                            "enable": false,
+                            "speed": 40,
+                            "size_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": false
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 5,
+                        "direction": "bottom",
+                        "random": false,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                        "attract": {
+                            "enable": false,
+                            "rotateX": 600,
+                            "rotateY": 1200
+                        }
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": false
+                        },
+                        "onclick": {
+                            "enable": false
+                        },
+                        "resize": true
+                    }
+                },
+                "retina_detect": true
+            });
+
+            // Mobile menu toggle
+            $('.mobile-menu-btn').click(function() {
+                $('.mobile-menu').slideToggle();
+            });
+        });
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

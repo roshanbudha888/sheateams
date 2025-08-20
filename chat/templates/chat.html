@@ -1,0 +1,423 @@
+{% extends "base.html" %}
+{% block title %}Chat - {{ room.name }}{% endblock %}
+
+{% block extra_head %}
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-app-container {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #142a73ff, rgba(22, 6, 85, 1));
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .chat-container {
+        width: 100%;
+        max-width: 400px;
+        height: 80vh;
+        background-color: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-header {
+        background: linear-gradient(to right, #0b1d62ff, #6a79f6);
+        color: white;
+        padding: 20px;
+        text-align: center;
+        position: relative;
+    }
+
+    .chat-header h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .online-indicator {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        background-color: #4cd964;
+        border-radius: 50%;
+        margin-left: 10px;
+    }
+
+    .chat-messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background-color: #f5f7fb;
+    }
+
+    .message {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .message.sent {
+        align-items: flex-end;
+    }
+
+    .message.received {
+        align-items: flex-start;
+    }
+
+    .message-content {
+        max-width: 70%;
+        padding: 12px 16px;
+        border-radius: 20px;
+        margin-top: 5px;
+        position: relative;
+        word-break: break-word;
+    }
+
+    .sent .message-content {
+        background-color: #4a6cf7;
+        color: white;
+        border-bottom-right-radius: 5px;
+    }
+
+    .received .message-content {
+        background-color: #e5e7eb;
+        color: #333;
+        border-bottom-left-radius: 5px;
+    }
+
+    .message-info {
+        font-size: 0.75rem;
+        color: #777;
+        margin: 0 5px;
+    }
+
+    .message-img {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 12px;
+        margin-top: 5px;
+        cursor: pointer;
+        object-fit: cover;
+    }
+
+    .chat-input {
+        display: flex;
+        padding: 15px;
+        background-color: white;
+        border-top: 1px solid #e5e7eb;
+        align-items: center;
+    }
+
+    .input-group {
+        display: flex;
+        flex: 1;
+        background-color: #f0f2f5;
+        border-radius: 24px;
+        padding: 5px 15px;
+        align-items: center;
+        margin: 0 10px;
+    }
+
+    #messageInput {
+        flex: 1;
+        border: none;
+        background: transparent;
+        padding: 10px 5px;
+        outline: none;
+        font-size: 1rem;
+    }
+
+    .btn {
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 50%;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn:hover {
+        background-color: #e5e7eb;
+    }
+
+    .send-btn {
+        color: #4a6cf7;
+        font-size: 1.2rem;
+    }
+
+    .attach-btn {
+        color: #6a79f6;
+        font-size: 1.2rem;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+    }
+
+    #imageInput {
+        display: none;
+    }
+
+    .timestamp {
+        font-size: 0.7rem;
+        color: #999;
+        margin-top: 3px;
+        text-align: right;
+    }
+    
+    /* Typing indicator */
+    .typing-indicator {
+        display: none;
+        font-size: 0.8rem;
+        color: #777;
+        margin: 5px 0 15px 10px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-height: 700px) {
+        .chat-container {
+            height: 90vh;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .chat-app-container {
+            padding: 10px;
+        }
+        
+        .chat-container {
+            height: 95vh;
+            border-radius: 12px;
+        }
+        
+        .message-content {
+            max-width: 85%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chat-app-container">
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>{{ room.name }} <span class="online-indicator"></span></h1>
+            <p>Send messages and share images</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages will be added here dynamically -->
+            <div class="typing-indicator" id="typingIndicator">
+                <span>Someone is typing...</span>
+            </div>
+        </div>
+        
+        <div class="chat-input">
+            <button class="btn attach-btn" id="attachButton">
+                <i class="fas fa-paperclip"></i>
+            </button>
+            <div class="input-group">
+                <input type="text" id="messageInput" placeholder="Type your message...">
+            </div>
+            <button class="btn send-btn" id="sendButton">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="imageModal">
+        <span class="close-btn" id="closeModal">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <input type="file" id="imageInput" accept="image/*">
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const attachButton = document.getElementById('attachButton');
+        const imageInput = document.getElementById('imageInput');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const closeModal = document.getElementById('closeModal');
+        const typingIndicator = document.getElementById('typingIndicator');
+        
+        let typingTimer;
+        
+        // Sample initial messages
+        addMessage('Hello! How can I help you today?', 'received');
+        addMessage('Hi there! I want to share an image with you.', 'sent');
+        addMessage('', 'received', 'https://picsum.photos/300/200');
+        
+        // Send message on button click
+        sendButton.addEventListener('click', sendMessage);
+        
+        // Send message on Enter key
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Show typing indicator when user is typing
+        messageInput.addEventListener('input', function() {
+            showTypingIndicator();
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(hideTypingIndicator, 1000);
+        });
+        
+        // Open file dialog when attach button is clicked
+        attachButton.addEventListener('click', function() {
+            imageInput.click();
+        });
+        
+        // Handle image selection
+        imageInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    addMessage('', 'sent', e.target.result);
+                    // Simulate response after a short delay
+                    setTimeout(() => {
+                        addMessage('Nice image! Thanks for sharing.', 'received');
+                    }, 1000);
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+                // Reset the input
+                this.value = '';
+            }
+        });
+        
+        // Close modal when close button is clicked
+        closeModal.addEventListener('click', function() {
+            imageModal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside the image
+        imageModal.addEventListener('click', function(e) {
+            if (e.target !== modalImage) {
+                imageModal.style.display = 'none';
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && imageModal.style.display === 'flex') {
+                imageModal.style.display = 'none';
+            }
+        });
+        
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                addMessage(message, 'sent');
+                messageInput.value = '';
+                hideTypingIndicator();
+                
+                // Simulate a response after a short delay
+                setTimeout(() => {
+                    addMessage('Thanks for your message!', 'received');
+                }, 1000);
+            }
+        }
+        
+        function addMessage(text, type, imageUrl = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            if (imageUrl) {
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.className = 'message-img';
+                img.alt = 'Shared image';
+                img.addEventListener('click', function() {
+                    modalImage.src = imageUrl;
+                    imageModal.style.display = 'flex';
+                });
+                messageDiv.appendChild(img);
+                
+                if (text) {
+                    const textDiv = document.createElement('div');
+                    textDiv.className = 'message-content';
+                    textDiv.textContent = text;
+                    messageDiv.appendChild(textDiv);
+                }
+            } else {
+                const textDiv = document.createElement('div');
+                textDiv.className = 'message-content';
+                textDiv.textContent = text;
+                messageDiv.appendChild(textDiv);
+            }
+            
+            const timestamp = document.createElement('div');
+            timestamp.className = 'timestamp';
+            timestamp.textContent = getCurrentTime();
+            messageDiv.appendChild(timestamp);
+            
+            // Insert before typing indicator
+            chatMessages.insertBefore(messageDiv, typingIndicator);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function getCurrentTime() {
+            const now = new Date();
+            return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        }
+        
+        function showTypingIndicator() {
+            typingIndicator.style.display = 'block';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function hideTypingIndicator() {
+            typingIndicator.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Ticket #{{ ticket.ticket_id }}{% endblock %}
+
+{% block content %}
+<div class="page-container ticket-detail">
+    <div class="ticket-card">
+        <div class="ticket-header">
+            <h1>Ticket #{{ ticket.ticket_id }}</h1>
+            <span class="ticket-status status-{{ ticket.status }}">
+                {{ ticket.get_status_display }}
+            </span>
+        </div>
+        
+        <div class="ticket-meta">
+            <p><strong>Subject:</strong> {{ ticket.subject }}</p>
+            <p><strong>Category:</strong> {{ ticket.get_category_display }}</p>
+            <p><strong>Submitted:</strong> {{ ticket.created_at|date:"F j, Y H:i" }}</p>
+            {% if ticket.user %}
+            <p><strong>Submitted by:</strong> {{ ticket.user.username }}</p>
+            {% endif %}
+        </div>
+        
+        <div class="ticket-message">
+            <h3>Message:</h3>
+            <p>{{ ticket.message }}</p>
+        </div>
+        
+        {% if request.user.is_staff %}
+        <div class="ticket-actions">
+            <a href="{% url 'admin:support_supportticket_change' ticket.id %}" class="btn">
+                <i class="fas fa-edit"></i> Edit in Admin
+            </a>
+        </div>
+        {% endif %}
+        
+        <a href="{% url 'support:support' %}" class="btn btn-back">
+            <i class="fas fa-arrow-left"></i> Back to Support
+        </a>
+    </div>
+</div>
+{% endblock %}
