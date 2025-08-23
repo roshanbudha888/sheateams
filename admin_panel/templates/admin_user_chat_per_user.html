@@ -8,7 +8,7 @@
             <div class="chat-users">
                 <h3>Online Users</h3>
                 {% for user in online_users %}
-                <div class="chat-user {% if forloop.first %}active{% endif %}" data-user-id="{{ user.id }}">
+                <div class="chat-user {% if user.id == selected_conversation.id %}active{% endif %}" data-user-id="{{ user.id }}">
                     <div class="user-avatar">{{ user.name|first|upper }}</div>
                     <div class="user-info">
                         <a href="{% url 'admin_panel:chat_system_per_user' user.id %}" style="text-decoration: none; color: white;">
@@ -92,6 +92,7 @@ function initializeWebSocket(userId) {
     // Create WebSocket connection
     const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const wsPath = `${wsScheme}://${window.location.host}/ws/chat/conversation/${userId}/`;
+    console.log(wsPath)
     
     chatSocket = new WebSocket(wsPath);
     

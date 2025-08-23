@@ -34,7 +34,7 @@ def chat(request):
     
     # Get or create conversation between current user and admin
     conversation, created = Conversation.objects.get_or_create(
-        name=f"Chat with {request.user.username}"
+        name=f"Chat between Admin and {request.user.username}"
     )
     
     # Add participants if this is a new conversation

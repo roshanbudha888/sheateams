@@ -41,7 +41,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         try:
             text_data_json = json.loads(text_data)
-            print(text_data_json,"okokokok")
+            # print(text_data_json,"okokokok")
             message = text_data_json['content']
             image_data = text_data_json.get('image', None)
 
@@ -57,8 +57,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # Save the text message only
                 message_obj = await self.save_message(message, sender_id)
             
-            # Save message to database
-            message_obj = await self.save_message(message, sender_id)
 
             # Send message to room group
             await self.channel_layer.group_send(
@@ -71,8 +69,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'timestamp': message_obj.timestamp.isoformat()
                 }
             )
+            print("success msg",text_data)
         except Exception as e:
-            print(f"Error in receive: {e}")
+            print(f"Error in receive: {e}",text_data                                                                                                        )
             await self.send(text_data=json.dumps({
                 'error': 'Failed to process message'
             }))
@@ -153,5 +152,5 @@ class ChatConsumer(AsyncWebsocketConsumer):
             image=f"chat_images/{file_name}",  # Store the image path in the model
             content="",  # For image messages, content is left empty
         )
-        print("success message with image",message)
+        # print("success message with image",message)
         return message
