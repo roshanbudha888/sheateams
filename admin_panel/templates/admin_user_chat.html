@@ -1,0 +1,54 @@
+{% extends 'master.html' %}
+{% block content %}
+
+    <!-- <section id="chat" class="dashboard-section"> -->
+        <h2 class="section-title">Chat System</h2>
+        
+        <div class="chat-container">
+            <div class="chat-users">
+                <h3>Online Users</h3>
+                {% for user in online_users %}
+                <div class="chat-user {% if forloop.first %}active{% endif %}" data-user-id="{{ user.id }}">
+                    <div class="user-avatar">{{ user.name|first|upper }}</div>
+                    <div class="user-info">
+                        <a href="{% url 'admin_panel:chat_system_per_user' user.id %}" style="text-decoration: none; color: white;">
+                            <h4>{{ user.name }}</h4>
+                            <span class="status-online">Online</span>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <p>No users online</p>
+                {% endfor %}
+            </div>
+            
+            <div class="chat-messages">
+                <h3>Please select user</h3>
+                <div class="messages-container" id="messages-container">
+                    {% for message in chat_messages %}
+                    <div class="message {% if message.sender == request.user %}message-outgoing{% else %}message-incoming{% endif %}">
+                        <div class="message-sender">{{ message.sender.username }}</div>
+                        <div>{{ message.content }}</div>
+                        {% if message.image %}
+                        <img src="{{ message.image.url }}" class="message-img" alt="Chat image">
+                        {% endif %}
+                        <div class="message-time">{{ message.timestamp|date:"H:i" }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" placeholder="Type your message..." id="chat-input">
+                    <input type="file" id="image-upload" style="display: none;" accept="image/*">
+                    <button class="img-upload-btn" id="img-upload-btn">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <button class="chat-send-btn" id="chat-send">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+{% endblock %}

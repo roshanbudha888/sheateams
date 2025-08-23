@@ -1,0 +1,326 @@
+{% extends 'master.html' %}
+{% block content %}
+
+    <!-- <section id="chat" class="dashboard-section"> -->
+        <h2 class="section-title">Chat System</h2>
+        
+        <div class="chat-container">
+            <div class="chat-users">
+                <h3>Online Users</h3>
+                {% for user in online_users %}
+                <div class="chat-user {% if forloop.first %}active{% endif %}" data-user-id="{{ user.id }}">
+                    <div class="user-avatar">{{ user.name|first|upper }}</div>
+                    <div class="user-info">
+                        <a href="{% url 'admin_panel:chat_system_per_user' user.id %}" style="text-decoration: none; color: white;">
+                            <h4>{{ user.name }}</h4>
+                            <span class="status-online">Online</span>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <p>No users online</p>
+                {% endfor %}
+            </div>
+            
+            <div class="chat-messages">
+                <h3>{{selected_user.username}}</h3>
+                <div class="messages-container" id="messages-container">
+                    {% for message in chat_messages %}
+                    <div class="message {% if message.sender == request.user %}message-outgoing{% else %}message-incoming{% endif %}">
+                        <div class="message-sender">{{ message.sender.username }}</div>
+                        <div>{{ message.content }}</div>
+                        {% if message.image %}
+                        <img src="{{ message.image.url }}" class="message-img" alt="Chat image">
+                        {% endif %}
+                        <div class="message-time">{{ message.timestamp|date:"H:i" }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" placeholder="Type your message..." id="chat-input">
+                    <input type="file" id="image-upload" style="display: none;" accept="image/*">
+                    <button class="img-upload-btn" id="img-upload-btn">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <button class="chat-send-btn" id="chat-send">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+{% endblock %}
+{% block scripts %}
+ <script>
+// Get selected user ID from the template or URL
+let selectedUserId = null;
+let chatSocket = null;
+
+// Initialize chat system when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Get selected user ID from the first active user or from URL
+    const activeUser = document.querySelector('.chat-user.active');
+    if (activeUser) {
+        selectedUserId = activeUser.getAttribute('data-user-id');
+    }
+    
+    // If no active user, try to get from URL or first user
+    if (!selectedUserId) {
+        const firstUser = document.querySelector('.chat-user[data-user-id]');
+        if (firstUser) {
+            selectedUserId = firstUser.getAttribute('data-user-id');
+        }
+    }
+    
+    if (selectedUserId) {
+        initializeWebSocket(selectedUserId);
+    }
+    
+    // Set up event listeners
+    setupEventListeners();
+});
+
+// Initialize WebSocket connection
+function initializeWebSocket(userId) {
+    // Close existing connection if any
+    if (chatSocket) {
+        chatSocket.close();
+    }
+    
+    // Create WebSocket connection
+    const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const wsPath = `${wsScheme}://${window.location.host}/ws/chat/conversation/${userId}/`;
+    
+    chatSocket = new WebSocket(wsPath);
+    
+    // WebSocket event handlers
+    chatSocket.onopen = function(event) {
+        console.log('WebSocket connection established');
+    };
+    
+    chatSocket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        handleIncomingMessage(data);
+    };
+    
+    chatSocket.onclose = function(event) {
+        console.log('WebSocket connection closed');
+        // Optionally attempt to reconnect
+        setTimeout(() => {
+            if (selectedUserId) {
+                initializeWebSocket(selectedUserId);
+            }
+        }, 3000);
+    };
+    
+    chatSocket.onerror = function(event) {
+        console.error('WebSocket error:', event);
+    };
+}
+
+// Handle incoming WebSocket messages
+function handleIncomingMessage(data) {
+    const messagesContainer = document.getElementById('messages-container');
+    
+    // Check for error messages
+    if (data.error) {
+        console.error('WebSocket error:', data.error);
+        return;
+    }
+    
+    // Create message element
+    const messageDiv = document.createElement('div');
+    const currentUserId = '{{ request.user.id }}';
+    messageDiv.className = `message ${data.sender_id == currentUserId ? 'message-outgoing' : 'message-incoming'}`;
+    
+    let messageHTML = `
+        <div class="message-sender">${data.sender_username}</div>
+        <div>${data.message}</div>
+    `;
+    
+    // Add image if present
+    if (data.image_url) {
+        messageHTML += `<img src="${data.image_url}" class="message-img" alt="Chat image">`;
+    }
+    
+    messageHTML += `<div class="message-time">${formatTime(data.timestamp || new Date())}</div>`;
+    
+    messageDiv.innerHTML = messageHTML;
+    
+    // Append message to container
+    messagesContainer.appendChild(messageDiv);
+    
+    // Scroll to bottom
+    scrollToBottom();
+}
+
+// Send message through WebSocket
+function sendMessage(content, imageFile = null) {
+    if (!chatSocket || chatSocket.readyState !== WebSocket.OPEN) {
+        console.error('WebSocket is not connected');
+        return;
+    }
+    
+    const messageData = {
+        'type': 'chat_message',
+        'content': content,
+        'receiver_id': selectedUserId
+    };
+    
+    // Handle image upload if present
+    if (imageFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            messageData.image = e.target.result;
+            chatSocket.send(JSON.stringify(messageData));
+        };
+        reader.readAsDataURL(imageFile);
+    } else {
+        chatSocket.send(JSON.stringify(messageData));
+    }
+}
+
+// Set up event listeners
+function setupEventListeners() {
+    const chatInput = document.getElementById('chat-input');
+    const chatSendBtn = document.getElementById('chat-send');
+    const imgUploadBtn = document.getElementById('img-upload-btn');
+    const imageUpload = document.getElementById('image-upload');
+    
+    // Send message on button click
+    if (chatSendBtn) {
+        chatSendBtn.addEventListener('click', function() {
+            sendChatMessage();
+        });
+    }
+    
+    // Send message on Enter key press
+    if (chatInput) {
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+    }
+    
+    // Image upload button click
+    if (imgUploadBtn) {
+        imgUploadBtn.addEventListener('click', function() {
+            imageUpload.click();
+        });
+    }
+    
+    // Handle image file selection
+    if (imageUpload) {
+        imageUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const content = chatInput.value.trim() || '';
+                sendMessage(content, file);
+                chatInput.value = '';
+                e.target.value = ''; // Reset file input
+            }
+        });
+    }
+    
+    // User selection in sidebar
+    const chatUsers = document.querySelectorAll('.chat-user');
+    chatUsers.forEach(user => {
+        user.addEventListener('click', function() {
+            const userId = this.getAttribute('data-user-id');
+            if (userId && userId !== selectedUserId) {
+                // Update active user
+                document.querySelectorAll('.chat-user').forEach(u => u.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Switch to new user chat
+                selectedUserId = userId;
+                initializeWebSocket(userId);
+                
+                // Optionally reload messages or clear current ones
+                // You might want to make an AJAX call to load message history
+                loadMessageHistory(userId);
+            }
+        });
+    });
+}
+
+// Send chat message
+function sendChatMessage() {
+    const chatInput = document.getElementById('chat-input');
+    const content = chatInput.value.trim();
+    
+    if (content) {
+        sendMessage(content);
+        chatInput.value = '';
+    }
+}
+
+// Load message history for selected user
+function loadMessageHistory(userId) {
+    // Make AJAX call to load message history
+    fetch(`/admin_panel/chat_messages/${userId}/`)
+        .then(response => response.json())
+        .then(data => {
+            const messagesContainer = document.getElementById('messages-container');
+            messagesContainer.innerHTML = '';
+            
+            data.messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${message.is_outgoing ? 'message-outgoing' : 'message-incoming'}`;
+                
+                let messageHTML = `
+                    <div class="message-sender">${message.sender_username}</div>
+                    <div>${message.content}</div>
+                `;
+                
+                if (message.image_url) {
+                    messageHTML += `<img src="${message.image_url}" class="message-img" alt="Chat image">`;
+                }
+                
+                messageHTML += `<div class="message-time">${formatTime(message.timestamp)}</div>`;
+                
+                messageDiv.innerHTML = messageHTML;
+                messagesContainer.appendChild(messageDiv);
+            });
+            
+            scrollToBottom();
+        })
+        .catch(error => {
+            console.error('Error loading message history:', error);
+        });
+}
+
+// Utility functions
+function getCurrentUserId() {
+    // You'll need to get current user ID from Django template or make it available globally
+    // For example: return window.currentUserId or get from a data attribute
+    return document.body.getAttribute('data-user-id') || null;
+}
+
+function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false 
+    });
+}
+
+function scrollToBottom() {
+    const messagesContainer = document.getElementById('messages-container');
+    if (messagesContainer) {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+}
+
+// Handle page visibility change to potentially reconnect WebSocket
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && selectedUserId && (!chatSocket || chatSocket.readyState === WebSocket.CLOSED)) {
+        initializeWebSocket(selectedUserId);
+    }
+});
+ </script>
+{% endblock %}

@@ -13,6 +13,8 @@ urlpatterns = [
     path('view-user/<int:user_id>/', views.view_user, name='view_user'),
     path('delete-user/<int:user_id>/', views.delete_user, name='delete_user'),
     path('chat/', views.chat_system, name='chat_system'),
+    path('chat/<int:id>/', views.chat_system_per_user, name='chat_system_per_user'),
+
     path('send-message/', views.send_message, name='send_message'),
     path('settings/', views.system_settings, name='system_settings'),
 ]

@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import json
 from django.contrib.auth.models import User
+from chat.models import Conversation
 
 from .models import Game, UserProfile, Transaction, Activity, Message, SystemSettings
 from .forms import GameForm
@@ -183,7 +184,7 @@ def delete_user(request, user_id):
 @user_passes_test(staff_required)
 def chat_system(request):
     # Get online users (simplified - in a real app, you'd track online status)
-    online_users = User.objects.filter(is_active=True)[:10]
+    online_users = Conversation.objects.all()
     
     # Get messages for the current user
     chat_messages = Message.objects.filter(
@@ -195,7 +196,46 @@ def chat_system(request):
         'chat_messages': chat_messages,
     }
     
-    return render(request, 'admin_dashboard.html', context)
+    return render(request, 'admin_user_chat.html', context)
+
+
+@login_required
+@user_passes_test(staff_required)
+def chat_system_per_user(request, id):
+    # Get the conversation by ID
+    try:
+        selected_conversation = Conversation.objects.get(id=id)
+        
+        # Get all conversations where current user is a participant
+        online_conversations = Conversation.objects.all()
+        
+        # Get messages for the selected conversation
+        chat_messages = selected_conversation.messages.all().order_by('timestamp')[:50]
+        
+        # Get the other participant in the conversation (for display)
+        other_participant = selected_conversation.participants.exclude(
+            id=request.user.id
+        ).first()
+        
+    except Conversation.DoesNotExist:
+        print("not exists --------------")
+        # Handle case where conversation doesn't exist
+        online_conversations = Conversation.objects.filter(
+            participants=request.user
+        ).distinct()
+        selected_conversation = None
+        chat_messages = []
+        other_participant = None
+    
+    context = {
+        'online_users': online_conversations,  # These are actually conversations now
+        'chat_messages': chat_messages,
+        'selected_user': other_participant,
+        'selected_conversation': selected_conversation,
+    }
+
+    return render(request, 'admin_user_chat_per_user.html', context)
+
 
 @login_required
 @user_passes_test(staff_required)
