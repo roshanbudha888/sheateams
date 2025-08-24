@@ -3,9 +3,20 @@ from django.shortcuts import render
 from datetime import datetime
 from payment.models import PaymentRequest
 from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def payment(request):
-    return render(request, 'payment.html')
+    # Get user's recent payment requests
+    recent_payments = PaymentRequest.objects.filter(
+        user=request.user
+    ).order_by("-created_at")[:10]
+
+    context = {
+        'recent_payments': recent_payments
+    }
+
+    return render(request, 'payment.html', context)
 
 
 

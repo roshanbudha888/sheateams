@@ -12,7 +12,8 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from payment.models import PaymentRequest
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
+from django.utils import timezone
 
 # @login_required
 # def chat(request):
