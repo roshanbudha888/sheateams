@@ -5,17 +5,51 @@ from django.contrib.auth.models import User
 from .models import Conversation, Message
 from .forms import MessageForm
 
+# @login_required
+# def chat(request):
+#     # Get all conversations for the current user
+#     conversations = Conversation.objects.get_or_create(participants=request.user)
+    
+#     # Get users who are not the current user
+#     users = User.objects.exclude(id=request.user.id)
+    
+#     context = {
+#         'conversations': conversations,
+#         'users': users,
+#     }
+#     return render(request, 'chat.html', context)
+
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from .models import Conversation, Message
+
 @login_required
 def chat(request):
-    # Get all conversations for the current user
-    conversations = Conversation.objects.filter(participants=request.user)
+    # Get or create conversation between current user and admin
+    admin_user = User.objects.filter(is_superuser=True).first()
     
-    # Get users who are not the current user
-    users = User.objects.exclude(id=request.user.id)
+    if not admin_user:
+        return render(request, 'chat.html', {'error': 'No admin user found'})
+    
+    # Get or create conversation between current user and admin
+    conversation, created = Conversation.objects.get_or_create(
+        name=f"Chat between Admin and {request.user.username}"
+    )
+    
+    # Add participants if this is a new conversation
+    if created:
+        conversation.participants.add(request.user, admin_user)
+    
+    # Get messages for this conversation
+    messages = conversation.messages.all().order_by('timestamp')
     
     context = {
-        'conversations': conversations,
-        'users': users,
+        'conversation': conversation,
+        'messages': messages,
+        'admin_user': admin_user,
+        'room': conversation,  # Add this for template compatibility
+        'current_user': request.user,
     }
     return render(request, 'chat.html', context)
 

@@ -197,6 +197,25 @@
         display: none;
     }
 
+    /* Image upload loading state */
+    .image-uploading {
+        opacity: 0.6;
+        position: relative;
+    }
+    
+    .image-uploading::after {
+        content: 'Uploading...';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 0.8rem;
+    }
+    
     .timestamp {
         font-size: 0.7rem;
         color: #999;
@@ -210,6 +229,25 @@
         font-size: 0.8rem;
         color: #777;
         margin: 5px 0 15px 10px;
+    }
+    
+    /* Connection status indicator */
+    .connection-status {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 0.8rem;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .connection-status.connected {
+        color: #4cd964;
+    }
+    
+    .connection-status.disconnected {
+        color: #ff3b30;
     }
     
     /* Responsive adjustments */
@@ -242,10 +280,21 @@
         <div class="chat-header">
             <h1>{{ room.name }} <span class="online-indicator"></span></h1>
             <p>Send messages and share images</p>
+            <div class="connection-status" id="connectionStatus">Connecting...</div>
         </div>
         
         <div class="chat-messages" id="chatMessages">
-            <!-- Messages will be added here dynamically -->
+            <!-- Load existing messages from Django -->
+            {% for message in messages %}
+            <div class="message {% if message.sender == current_user %}sent{% else %}received{% endif %}">
+                <div class="message-content">{{ message.content }}</div>
+                {% if message.image %}
+                <img src="{{ message.image.url }}" class="message-img" alt="Chat image" onclick="openImageModal('{{ message.image.url }}')">
+                {% endif %}
+                <div class="timestamp">{{ message.timestamp|date:"H:i" }}</div>
+            </div>
+            {% endfor %}
+            
             <div class="typing-indicator" id="typingIndicator">
                 <span>Someone is typing...</span>
             </div>
@@ -271,11 +320,25 @@
 
     <input type="file" id="imageInput" accept="image/*">
 </div>
+
+<!-- Hidden data for JavaScript -->
+<div id="djangoData" 
+     data-conversation-id="{{ conversation.id }}" 
+     data-current-user-id="{{ current_user.id }}"
+     data-current-username="{{ current_user.username }}"
+     style="display: none;"></div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Get Django data
+        const djangoData = document.getElementById('djangoData');
+        const conversationId = djangoData.getAttribute('data-conversation-id');
+        const currentUserId = djangoData.getAttribute('data-current-user-id');
+        const currentUsername = djangoData.getAttribute('data-current-username');
+        
+        // DOM elements
         const chatMessages = document.getElementById('chatMessages');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
@@ -285,139 +348,304 @@
         const modalImage = document.getElementById('modalImage');
         const closeModal = document.getElementById('closeModal');
         const typingIndicator = document.getElementById('typingIndicator');
+        const connectionStatus = document.getElementById('connectionStatus');
         
+        // WebSocket connection
+        let chatSocket = null;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
         let typingTimer;
         
-        // Sample initial messages
-        addMessage('Hello! How can I help you today?', 'received');
-        addMessage('Hi there! I want to share an image with you.', 'sent');
-        addMessage('', 'received', 'https://picsum.photos/300/200');
-        
-        // Send message on button click
-        sendButton.addEventListener('click', sendMessage);
-        
-        // Send message on Enter key
-        messageInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-        
-        // Show typing indicator when user is typing
-        messageInput.addEventListener('input', function() {
-            showTypingIndicator();
-            clearTimeout(typingTimer);
-            typingTimer = setTimeout(hideTypingIndicator, 1000);
-        });
-        
-        // Open file dialog when attach button is clicked
-        attachButton.addEventListener('click', function() {
-            imageInput.click();
-        });
-        
-        // Handle image selection
-        imageInput.addEventListener('change', function() {
-            if (this.files && this.files[0]) {
-                const reader = new FileReader();
+        // Initialize WebSocket connection
+        function initializeWebSocket() {
+            const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            const wsPath = `${wsScheme}://${window.location.host}/ws/chat/conversation/${conversationId}/`;
+            
+            chatSocket = new WebSocket(wsPath);
+            
+            chatSocket.onopen = function(event) {
+                console.log('WebSocket connection established');
+                connectionStatus.textContent = 'Connected';
+                connectionStatus.className = 'connection-status connected';
+                reconnectAttempts = 0;
+            };
+            
+            chatSocket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                handleIncomingMessage(data);
+            };
+            
+            chatSocket.onclose = function(event) {
+                console.log('WebSocket connection closed');
+                connectionStatus.textContent = 'Disconnected';
+                connectionStatus.className = 'connection-status disconnected';
                 
-                reader.onload = function(e) {
-                    addMessage('', 'sent', e.target.result);
-                    // Simulate response after a short delay
+                // Attempt to reconnect
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
                     setTimeout(() => {
-                        addMessage('Nice image! Thanks for sharing.', 'received');
-                    }, 1000);
+                        console.log(`Reconnection attempt ${reconnectAttempts}`);
+                        initializeWebSocket();
+                    }, 3000 * reconnectAttempts);
                 }
-                
-                reader.readAsDataURL(this.files[0]);
-                // Reset the input
-                this.value = '';
+            };
+            
+            chatSocket.onerror = function(event) {
+                console.error('WebSocket error:', event);
+                connectionStatus.textContent = 'Connection Error';
+                connectionStatus.className = 'connection-status disconnected';
+            };
+        }
+        
+        // Handle incoming WebSocket messages
+        function handleIncomingMessage(data) {
+            if (data.error) {
+                console.error('WebSocket error:', data.error);
+                return;
             }
-        });
-        
-        // Close modal when close button is clicked
-        closeModal.addEventListener('click', function() {
-            imageModal.style.display = 'none';
-        });
-        
-        // Close modal when clicking outside the image
-        imageModal.addEventListener('click', function(e) {
-            if (e.target !== modalImage) {
-                imageModal.style.display = 'none';
-            }
-        });
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && imageModal.style.display === 'flex') {
-                imageModal.style.display = 'none';
-            }
-        });
-        
-        function sendMessage() {
-            const message = messageInput.value.trim();
-            if (message) {
-                addMessage(message, 'sent');
-                messageInput.value = '';
-                hideTypingIndicator();
-                
-                // Simulate a response after a short delay
-                setTimeout(() => {
-                    addMessage('Thanks for your message!', 'received');
-                }, 1000);
+            
+            // Only add message if it's from another user to avoid duplicates
+            // (we already show our own messages immediately)
+            if (data.sender_id != currentUserId) {
+                const messageType = 'received';
+                addMessage(data.message, messageType, data.image_url, data.timestamp, data.sender_username);
             }
         }
         
-        function addMessage(text, type, imageUrl = null) {
+        // Send message through WebSocket
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message && chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+                // Show message immediately in the chat
+                addMessage(message, 'sent');
+                
+                const messageData = {
+                    'content': message
+                };
+                
+                chatSocket.send(JSON.stringify(messageData));
+                messageInput.value = '';
+                hideTypingIndicator();
+            } else if (!message) {
+                // Don't send empty messages
+                return;
+            } else {
+                console.error('WebSocket is not connected');
+                alert('Connection lost. Please refresh the page.');
+            }
+        }
+        
+        // Send image through WebSocket with callback
+        function sendImageWithCallback(imageFile, callback) {
+            if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const messageData = {
+                        'content': '',
+                        'image': e.target.result
+                    };
+                    
+                    // Store callback for this message
+                    // In a real implementation, you might want to use message IDs
+                    window.pendingImageCallback = callback;
+                    
+                    chatSocket.send(JSON.stringify(messageData));
+                };
+                reader.onerror = function() {
+                    callback(false);
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                console.error('WebSocket is not connected');
+                alert('Connection lost. Please refresh the page.');
+                callback(false);
+            }
+        }
+        
+        // Send image through WebSocket (legacy function)
+        function sendImage(imageFile) {
+            sendImageWithCallback(imageFile, function(success) {
+                // Legacy function doesn't need callback handling
+            });
+        }
+        
+        // Add message to chat display
+        function addMessage(text, type, imageUrl = null, timestamp = null, senderUsername = null) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
             
+            // Add sender info for received messages
+            if (type === 'received' && senderUsername) {
+                const senderDiv = document.createElement('div');
+                senderDiv.className = 'message-info';
+                senderDiv.textContent = senderUsername;
+                messageDiv.appendChild(senderDiv);
+            }
+            
+            // Add image if present
             if (imageUrl) {
                 const img = document.createElement('img');
                 img.src = imageUrl;
                 img.className = 'message-img';
                 img.alt = 'Shared image';
                 img.addEventListener('click', function() {
-                    modalImage.src = imageUrl;
-                    imageModal.style.display = 'flex';
+                    openImageModal(imageUrl);
                 });
                 messageDiv.appendChild(img);
-                
-                if (text) {
-                    const textDiv = document.createElement('div');
-                    textDiv.className = 'message-content';
-                    textDiv.textContent = text;
-                    messageDiv.appendChild(textDiv);
-                }
-            } else {
+            }
+            
+            // Add text content if present
+            if (text) {
                 const textDiv = document.createElement('div');
                 textDiv.className = 'message-content';
                 textDiv.textContent = text;
                 messageDiv.appendChild(textDiv);
             }
             
-            const timestamp = document.createElement('div');
-            timestamp.className = 'timestamp';
-            timestamp.textContent = getCurrentTime();
-            messageDiv.appendChild(timestamp);
+            // Add timestamp
+            const timestampDiv = document.createElement('div');
+            timestampDiv.className = 'timestamp';
+            timestampDiv.textContent = timestamp ? formatTimestamp(timestamp) : getCurrentTime();
+            messageDiv.appendChild(timestampDiv);
             
             // Insert before typing indicator
             chatMessages.insertBefore(messageDiv, typingIndicator);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            scrollToBottom();
+            
+            // Return the message element for further manipulation
+            return messageDiv;
         }
         
+        // Format timestamp from WebSocket message
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+        }
+        
+        // Get current time
         function getCurrentTime() {
             const now = new Date();
             return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
         }
         
+        // Open image modal
+        function openImageModal(imageUrl) {
+            modalImage.src = imageUrl;
+            imageModal.style.display = 'flex';
+        }
+        window.openImageModal = openImageModal; // Make it globally accessible
+        
+        // Scroll to bottom of messages
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Show/hide typing indicator
         function showTypingIndicator() {
             typingIndicator.style.display = 'block';
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            scrollToBottom();
         }
         
         function hideTypingIndicator() {
             typingIndicator.style.display = 'none';
         }
+        
+        // Event listeners
+        sendButton.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Typing indicator (optional - would need WebSocket support)
+        messageInput.addEventListener('input', function() {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                // Could send typing status to WebSocket here
+            }, 1000);
+        });
+        
+        attachButton.addEventListener('click', function() {
+            imageInput.click();
+        });
+        
+        imageInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select an image file.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Validate file size (5MB limit)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Image size must be less than 5MB.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Show the image immediately in the chat
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Add the image to the chat display immediately with uploading state
+                    const messageElement = addMessage('', 'sent', e.target.result);
+                    messageElement.classList.add('image-uploading');
+                    
+                    // Send the image through WebSocket
+                    sendImageWithCallback(file, function(success) {
+                        // Remove uploading state
+                        messageElement.classList.remove('image-uploading');
+                        if (!success) {
+                            // Show error state or remove the message
+                            messageElement.style.opacity = '0.5';
+                            const errorDiv = document.createElement('div');
+                            errorDiv.textContent = 'Failed to send image';
+                            errorDiv.style.color = 'red';
+                            errorDiv.style.fontSize = '0.8rem';
+                            messageElement.appendChild(errorDiv);
+                        }
+                    });
+                };
+                reader.readAsDataURL(file);
+                
+                this.value = ''; // Reset input
+            }
+        });
+        
+        // Modal event listeners
+        closeModal.addEventListener('click', function() {
+            imageModal.style.display = 'none';
+        });
+        
+        imageModal.addEventListener('click', function(e) {
+            if (e.target !== modalImage) {
+                imageModal.style.display = 'none';
+            }
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && imageModal.style.display === 'flex') {
+                imageModal.style.display = 'none';
+            }
+        });
+        
+        // Handle page visibility change
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden && (!chatSocket || chatSocket.readyState === WebSocket.CLOSED)) {
+                initializeWebSocket();
+            }
+        });
+        
+        // Initialize WebSocket connection
+        initializeWebSocket();
+        
+        // Scroll to bottom on page load
+        scrollToBottom();
     });
 </script>
 {% endblock %}

@@ -4,6 +4,11 @@ from channels.db import database_sync_to_async
 from django.contrib.auth.models import User
 from .models import Conversation, Message
 
+import base64
+import uuid
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.conversation_id = self.scope['url_route']['kwargs']['conversation_id']
@@ -36,14 +41,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         try:
             text_data_json = json.loads(text_data)
-            print(text_data_json,"okokokok")
+            # print(text_data_json,"okokokok")
             message = text_data_json['content']
-            
+            image_data = text_data_json.get('image', None)
+
             # Get sender_id from the authenticated session user
             sender_id = self.scope['user'].id
+
+            # If an image is sent, save it to the Message model
+            if image_data:
+                # Save the image to the Message model and get the image object
+                message_obj = await self.save_message_with_image(image_data, sender_id)
+                message = None  # Set message content to image URL
+            else:
+                # Save the text message only
+                message_obj = await self.save_message(message, sender_id)
             
-            # Save message to database
-            message_obj = await self.save_message(message, sender_id)
 
             # Send message to room group
             await self.channel_layer.group_send(
@@ -56,8 +69,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'timestamp': message_obj.timestamp.isoformat()
                 }
             )
+            print("success msg",text_data)
         except Exception as e:
-            print(f"Error in receive: {e}")
+            print(f"Error in receive: {e}",text_data                                                                                                        )
             await self.send(text_data=json.dumps({
                 'error': 'Failed to process message'
             }))
@@ -112,3 +126,31 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def get_username(self, user_id):
         user = User.objects.get(id=user_id)
         return user.username
+    
+    # Helper method to save the image to the database (if image is sent)
+    @database_sync_to_async
+    def save_message_with_image(self, image_data, sender_id):
+        # Decode the base64 image string
+        format, imgstr = image_data.split(';base64,') 
+        image_data = base64.b64decode(imgstr)
+
+        # Create a file name using UUID to avoid conflicts
+        file_name = f"{uuid.uuid4()}.png"
+        
+        # Create a Django ContentFile from the base64 image data
+        image_file = ContentFile(image_data)
+
+        # Save the image using Django's default storage (this will save it to 'chat_images/')
+        image_path = default_storage.save(f"chat_images/{file_name}", image_file)
+
+        # Now, create the message and save it along with the image
+        sender = User.objects.get(id=sender_id)
+        conversation = Conversation.objects.get(id=self.conversation_id)
+        message = Message.objects.create(
+            conversation=conversation,
+            sender=sender,
+            image=f"chat_images/{file_name}",  # Store the image path in the model
+            content="",  # For image messages, content is left empty
+        )
+        # print("success message with image",message)
+        return message
