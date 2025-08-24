@@ -1,0 +1,71 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Install dependencies
+      run: |
+        #python -m pip install --upgrade pip
+        #pip install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        #python manage.py test
+
+    - name: Deploy to Lightsail
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ap-southeast-2
+        BACKEND_USER: backend
+        BACKEND_PASSWORD: backend
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SERVER_IP: "54.225.152.30"
+        PORT: "8001"
+        SCREEN_NAME: "sheateams"
+        PROJECT_FOLDER: "/home/ubuntu/sheateams"
+
+
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY_TEST }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+        # Install rsync
+        #sudo apt-get install -y rsync
+
+        # Create necessary directories on the server
+        echo "Create necessary directories on the server"
+        # ssh -o StrictHostKeyChecking=no ubuntu@$SERVER_IP "sudo apt-get install -y python3-venv"
+        ssh -o StrictHostKeyChecking=no ubuntu@$SERVER_IP "mkdir -p $PROJECT_FOLDER"
+
+        # use rsync to copy only changed files
+        echo "Use rsync to copy only changed files"
+        rsync -avz --delete --exclude='__pycache__/' --exclude='venv/' --exclude='db.sqlite3' --exclude='env/' --exclude='staticfiles/' --exclude='media/' --exclude='.git/' -e "ssh -o StrictHostKeyChecking=no" ./ ubuntu@$SERVER_IP:$PROJECT_FOLDER/
+
+        #copy and replace all files to cicd folder
+        #scp -r -o StrictHostKeyChecking=no ./* ubuntu@$SERVER_IP:$PROJECT_FOLDER/
+
+        # Run deployment commands on the server
+        echo "Running deployment commands on the server"
+        ssh -o StrictHostKeyChecking=no ubuntu@$SERVER_IP "cd $PROJECT_FOLDER && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput"
+        
+        #echo "Running deployment commands on the server" &&
+        # ssh -o StrictHostKeyChecking=no ubuntu@$SERVER_IP "cd $PROJECT_FOLDER && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput && screen -ls | grep $SCREEN_NAME | awk '{print $1}' | xargs -r -I{} screen -X -S {} quit && screen -dmS $SCREEN_NAME bash -c 'source venv/bin/activate && python manage.py runserver 0.0.0.0:$PORT'"
+
+# AmazonEC2FullAccess
