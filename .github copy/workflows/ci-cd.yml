@@ -1,0 +1,97 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Install dependencies
+      run: |
+        #python -m pip install --upgrade pip
+        #pip install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        #python manage.py test
+
+    - name: Deploy to Lightsail
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ap-southeast-2
+        BACKEND_USER: backend
+        BACKEND_PASSWORD: backend
+        SSH_PRIVATE_KEY: "-----BEGIN RSA PRIVATE KEY-----
+          MIIEpQIBAAKCAQEAznCQkUNDzAVqHbhJ+QGZz5SUqbB7sLaDGaEsvP2tWK3uytPh
+          TSNPyBi77+8D4CL6vzL5ZiEdYc8pcc0J15rSAQQJcH8K5cvnbxE2I57+/5JShLgE
+          j1zuZ8lv0RJsj4f5uqme6JRPyCZxyasY77o1V/vRP3sLRAB2OnaUWQGH435e479r
+          c6kbIaanSUBSbSC7jjXzrA4k5VeXqlWP03sIf8l0SkbOBO+Kg+Z2sp6APTd9DQgG
+          DfGlelCBQ0aSxl5izpzF6poC2NjrNUDG1dUyVk1YaSYPEVkzkcrrPnC6WGig+I4N
+          iPlzsyo76zeEilDcek+61+SgHJs6TZWXzIAPfQIDAQABAoIBAQClGXc1BaOp/kaQ
+          wDtAztvxHLYMQ92YRU7x52m9N/AztN7+DZfpNi1vLQDY8cGatr7svNqiqCc0exZ9
+          MesGKIZ9U3otIx1XDMzpkc1HjbgIM0CVbgoPkdYE4R/xCBgUbj314AP7o+lue/iS
+          vahyyOwykm0VpNUsrGXhecZIrKW99HoAPfLZbYoG71ER/WKRC+mz94nmtZIRBPQL
+          zYSmMgt2Qdgblry2Dswteh+K9jVELhugAedklXUqNVdgVjLNNTntvYvQqGySOv25
+          7bp7kWsZl4rMWiIJkmv0rVD/1lIuOYFUqIEXHwhCW5/i7rcohq/KsplLVXIDoWUn
+          hGBL1KxBAoGBAO50bptxvSM3ltC31tIOzcaTpFlI++5Up1ojCTer2KIewiM3ZFwh
+          L5VjzkiSudKbHn4CjBOWpGcQHtvcmf/3YNjF8hizijAaMEDrUKb4kqGJLQADcx+M
+          j/ixYIcC0Pa729RWi8AxCEhoAIngT3zA7SPSpqWuUgKolvIJnCnM6AJxAoGBAN2h
+          F3c4Gemj3j48Rt1AM0iZK4ltc+yiP1H8LmgHt5HwwwXZSjIE1B+jB+fYHXO6ZSco
+          72KfGEAj/pj7XlOZWx3VHFsKd5V2nOdvgXRP54ixfOkM/a2MULyrzj4XPU5+VRxk
+          dUKG02IFJbBtleQWFVT1vR432wrbHLlrkFIfb0vNAoGBAK70xLbOs/xj7AcF69tB
+          u1+IslxEPXx3pjZvYHL1ZkRFFyIpoTwrqTMOAKuk5CyPXccM7WPt8oAgBtRAPsnc
+          4rUKP4A6MxjqDh+DyDBKT6Ov91F8NnqecoAA/RbyTQnLehaIzY7dKvudO0/uQcQB
+          9byD8Xu8tDV5Jw89V9QfoNcxAoGBAMTwbOWnmH8g+k/bSC0661dLpIBOHoDb++Bi
+          cupGUT0B8Iq191RTLhuex1uhkypPK6uMmIvOS8JTOd2/IKaw02LDCJttxa2u5OZT
+          E3nDtz6kWRbOUG1zDhtZn79U70lcwUylh/1ByXyEjmUkO9meNf51D0RW5fHTmsa5
+          allPTZrRAoGAMYfZlWf7Tk5EoBdCVTg9pjnH8jDuHcrbJbaeaWN1dY0ryZI6dX3s
+          f1Krb28xX+MajVJU2YGuie6Vm0nQDy/QyN8SHoUxA4DryTSon5jMICXHT1zZKqfd
+          nr+MlayOitLvBpMcKKL4dBv72Z8IJs2Dij9NwmNtDOpU7QghcjORhyQ=
+          -----END RSA PRIVATE KEY-----"
+        SERVER_IP: "54.225.152.30"
+        PORT: "8001"
+        SCREEN_NAME: "sheateams"
+        PROJECT_FOLDER: "/home/ubuntu/sheateams"
+
+
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY_TEST }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+        # Install rsync
+        #sudo apt-get install -y rsync
+
+        # Create necessary directories on the server
+        echo "Create necessary directories on the server"
+        # ssh -o StrictHostKeyChecking=no ubuntu@$SERVER_IP "sudo apt-get install -y python3-venv"
+        ssh -o StrictHostKeyChecking=no ubuntu@$SERVER_IP "mkdir -p $PROJECT_FOLDER"
+
+        # use rsync to copy only changed files
+        echo "Use rsync to copy only changed files"
+        rsync -avz --delete --exclude='__pycache__/' --exclude='venv/' --exclude='db.sqlite3' --exclude='env/' --exclude='staticfiles/' --exclude='media/' --exclude='.git/' -e "ssh -o StrictHostKeyChecking=no" ./ ubuntu@$SERVER_IP:$PROJECT_FOLDER/
+
+        #copy and replace all files to cicd folder
+        #scp -r -o StrictHostKeyChecking=no ./* ubuntu@$SERVER_IP:$PROJECT_FOLDER/
+
+        # Run deployment commands on the server
+        echo "Running deployment commands on the server"
+        ssh -o StrictHostKeyChecking=no ubuntu@$SERVER_IP "cd $PROJECT_FOLDER && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput"
+        
+        #echo "Running deployment commands on the server" &&
+        # ssh -o StrictHostKeyChecking=no ubuntu@$SERVER_IP "cd $PROJECT_FOLDER && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput && screen -ls | grep $SCREEN_NAME | awk '{print $1}' | xargs -r -I{} screen -X -S {} quit && screen -dmS $SCREEN_NAME bash -c 'source venv/bin/activate && python manage.py runserver 0.0.0.0:$PORT'"
+
+# AmazonEC2FullAccess
