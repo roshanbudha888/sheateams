@@ -1,14 +1,328 @@
+{% comment %} payment/template/success.html {% endcomment %}
+
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Payment Successful{% endblock %}
+
+{% block extra_css %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .payment-success {
+        background: linear-gradient(135deg, #04204aff 0%, #083377ff 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+    
+    .success-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(51, 7, 138, 0.3);
+        padding: 60px 40px;
+        text-align: center;
+        max-width: 500px;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .success-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, #1fd89dff, #123ce2ff, #1fd89dff);
+        animation: shimmer 2s ease-in-out infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { opacity: 0.8; }
+        50% { opacity: 1; }
+        100% { opacity: 0.8; }
+    }
+    
+    .success-icon {
+        font-size: 80px;
+        color: #28a745;
+        margin-bottom: 30px;
+        animation: checkmark 0.6s ease-in-out;
+    }
+    
+    @keyframes checkmark {
+        0% { 
+            transform: scale(0); 
+            opacity: 0; 
+        }
+        50% { 
+            transform: scale(1.2); 
+            opacity: 0.8; 
+        }
+        100% { 
+            transform: scale(1); 
+            opacity: 1; 
+        }
+    }
+    
+    .success-card h1 {
+        color: #2a1684ff;
+        font-size: 32px;
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+    
+    .success-card p {
+        color: #666;
+        font-size: 18px;
+        margin-bottom: 40px;
+        line-height: 1.6;
+    }
+    
+    .btn {
+        display: inline-block;
+        background: linear-gradient(135deg, #123ce2ff, #1fd89dff);
+        color: white;
+        padding: 15px 30px;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        margin: 10px;
+        min-width: 180px;
+    }
+    
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(18, 60, 226, 0.3);
+        text-decoration: none;
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: linear-gradient(135deg, #6c757d, #495057);
+    }
+    
+    .btn-secondary:hover {
+        box-shadow: 0 10px 20px rgba(108, 117, 125, 0.3);
+    }
+    
+    .success-details {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 25px;
+        margin: 30px 0;
+        border-left: 5px solid #28a745;
+    }
+    
+    .success-details h3 {
+        color: #2a1684ff;
+        margin-bottom: 15px;
+        font-size: 20px;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+    
+    .detail-label {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .detail-value {
+        color: #2a1684ff;
+        font-weight: 500;
+    }
+    
+    .action-buttons {
+        margin-top: 40px;
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .floating-elements {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+    
+    .floating-elements::before,
+    .floating-elements::after {
+        content: '✓';
+        position: absolute;
+        color: rgba(40, 167, 69, 0.1);
+        font-size: 100px;
+        font-weight: bold;
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .floating-elements::before {
+        top: 10%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+    
+    .floating-elements::after {
+        bottom: 10%;
+        right: 10%;
+        animation-delay: 3s;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.1; }
+        50% { transform: translateY(-20px) rotate(180deg); opacity: 0.2; }
+    }
+    
+    .confetti {
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 10px;
+        height: 10px;
+        background: #ffd700;
+        animation: confetti-fall 3s ease-out infinite;
+    }
+    
+    .confetti:nth-child(2) { left: 30%; animation-delay: 0.5s; background: #ff6b6b; }
+    .confetti:nth-child(3) { left: 70%; animation-delay: 1s; background: #4ecdc4; }
+    .confetti:nth-child(4) { left: 20%; animation-delay: 1.5s; background: #45b7d1; }
+    .confetti:nth-child(5) { left: 80%; animation-delay: 2s; background: #96ceb4; }
+    
+    @keyframes confetti-fall {
+        0% { transform: translateX(-50%) translateY(-100px) rotate(0deg); opacity: 1; }
+        100% { transform: translateX(-50%) translateY(400px) rotate(720deg); opacity: 0; }
+    }
+    
+    @media (max-width: 768px) {
+        .success-card {
+            margin: 20px;
+            padding: 40px 25px;
+        }
+        
+        .success-card h1 {
+            font-size: 28px;
+        }
+        
+        .success-icon {
+            font-size: 60px;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
 
 {% block content %}
 <div class="page-container payment-success">
     <div class="success-card">
+        <div class="floating-elements">
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+        </div>
+        
         <i class="fas fa-check-circle success-icon"></i>
         <h1>Payment Successful!</h1>
-        <p>Your transaction has been completed successfully.</p>
-        <a href="{% url 'payment:payment' %}" class="btn">Back to Payments</a>
+        <p>Your transaction has been completed successfully. Thank you for your payment!</p>
+        
+        {% if payment_details %}
+        <div class="success-details">
+            <h3>Transaction Details</h3>
+            {% if payment_details.amount %}
+            <div class="detail-row">
+                <span class="detail-label">Amount:</span>
+                <span class="detail-value">${{ payment_details.amount }}</span>
+            </div>
+            {% endif %}
+            {% if payment_details.transaction_id %}
+            <div class="detail-row">
+                <span class="detail-label">Transaction ID:</span>
+                <span class="detail-value">{{ payment_details.transaction_id }}</span>
+            </div>
+            {% endif %}
+            {% if payment_details.payment_method %}
+            <div class="detail-row">
+                <span class="detail-label">Payment Method:</span>
+                <span class="detail-value">{{ payment_details.payment_method|title }}</span>
+            </div>
+            {% endif %}
+            {% if payment_details.email %}
+            <div class="detail-row">
+                <span class="detail-label">Email:</span>
+                <span class="detail-value">{{ payment_details.email }}</span>
+            </div>
+            {% endif %}
+            <div class="detail-row">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value" style="color: #28a745;">Completed</span>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="action-buttons">
+            <a href="{% url 'payment:payment' %}" class="btn">Make Another Payment</a>
+            <a href="/chat/" class="btn btn-secondary">Go to Chat</a>
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add some interactive effects
+    document.addEventListener('DOMContentLoaded', function() {
+        // Trigger confetti animation
+        setTimeout(function() {
+            const successCard = document.querySelector('.success-card');
+            successCard.style.transform = 'scale(1.02)';
+            setTimeout(function() {
+                successCard.style.transform = 'scale(1)';
+            }, 200);
+        }, 100);
+        
+        Auto-redirect after 30 seconds (optional)
+         setTimeout(function() {
+             if (confirm('Auto-redirecting to payments page. Click Cancel to stay.')) {
+                 window.location.href = "{% url 'payment:payment' %}";
+             }
+         }, 30000);
+    });
+</script>
 {% endblock %}
