@@ -1,3 +1,4 @@
+{% comment %} payment/template/payment.html {% endcomment %}
 {% extends "base.html" %}
 {% load static %}
 
@@ -337,58 +338,100 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Payment method selection
-        const paymentMethods = document.querySelectorAll('.payment-method');
-        
-        paymentMethods.forEach(method => {
-            method.addEventListener('click', function() {
-                // Remove selected class from all methods
-                paymentMethods.forEach(m => m.classList.remove('selected'));
-                
-                // Add selected class to clicked method
-                this.classList.add('selected');
-                
-                // Update a hidden input field with the selected method (if needed)
-                const selectedMethod = this.getAttribute('data-method');
-                document.getElementById('selected-method').value = selectedMethod;
-            });
-        });
-        
-        // Process payment button
-        const payButton = document.getElementById('pay-button');
-        const paymentForm = document.querySelector('.payment-form form');
-        
-        paymentForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const amount = document.getElementById('amount').value;
-            const email = document.getElementById('email').value;
-            const selectedMethod = document.querySelector('.payment-method.selected').getAttribute('data-method');
-            
-            if (!amount || amount <= 0) {
-                alert('Please enter a valid amount');
-                return;
-            }
-            
-            if (!email || !email.includes('@')) {
-                alert('Please enter a valid email address');
-                return;
-            }
-            
-            // Simulate payment processing
-            payButton.textContent = 'Processing...';
-            payButton.disabled = true;
-            
-            setTimeout(function() {
-                alert(`Payment of $${amount} processed successfully with ${selectedMethod.toUpperCase()}!`);
-                payButton.textContent = 'Process Payment';
-                payButton.disabled = false;
-                
-                // Clear form
-                document.getElementById('amount').value = '';
-                document.getElementById('email').value = '';
-            }, 2000);
+    // Payment method selection
+    const paymentMethods = document.querySelectorAll('.payment-method');
+    
+    paymentMethods.forEach(method => {
+        method.addEventListener('click', function() {
+            paymentMethods.forEach(m => m.classList.remove('selected'));
+            this.classList.add('selected');
         });
     });
+    
+    // Payment form submission
+    const payButton = document.getElementById('pay-button');
+    const paymentForm = document.querySelector('.payment-form form');
+    
+    paymentForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const amount = document.getElementById('amount').value;
+        const email = document.getElementById('email').value;
+        const selectedMethod = document.querySelector('.payment-method.selected').getAttribute('data-method');
+        
+        if (!amount || amount <= 0) {
+            alert('Please enter a valid amount');
+            return;
+        }
+        
+        if (!email || !email.includes('@')) {
+            alert('Please enter a valid email address');
+            return;
+        }
+        
+        // Show processing state
+        payButton.textContent = 'Sending...';
+        payButton.disabled = true;
+        
+        // Send payment request to admin via chat
+        sendPaymentToChat(amount, email, selectedMethod)
+            .then(response => {
+                if (response.success) {
+                    alert('Payment request sent to admin! Please check the chat for your QR code.');
+                    // Clear form
+                    document.getElementById('amount').value = '';
+                    document.getElementById('email').value = '';
+                    // Redirect to chat
+                    window.location.href = '/chat/';
+                } else {
+                    alert('Failed to send payment request. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error sending request. Please try again.');
+            })
+            .finally(() => {
+                payButton.textContent = 'Process Payment';
+                payButton.disabled = false;
+            });
+    });
+});
+
+async function sendPaymentToChat(amount, email, paymentMethod) {
+    try {
+        const response = await fetch('/chat/send-payment-request/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                amount: amount,
+                email: email,
+                payment_method: paymentMethod
+            })
+        });
+        
+        return await response.json();
+    } catch (error) {
+        throw error;
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 </script>
 {% endblock %}
