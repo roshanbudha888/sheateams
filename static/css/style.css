@@ -141,14 +141,22 @@
     }
     
     .mobile-menu {
-        display: none;
+        /* display: none; */
         background: var(--dark-color);
         padding: 20px;
         position: fixed;
         top: 70px;
         left: 0;
         width: 100%;
+
+        /* Hide off screen initially */
+        transform: translateY(-100%);
+        transition: transform 0.3s ease;
         z-index: 999;
+    }
+
+    .mobile-menu.active{
+        transform: translateY(0%);
     }
     
     .mobile-nav-link {

@@ -328,15 +328,15 @@
         </thead>
         <tbody>
             {% if recent_payments %}
-                {% for payment in recent_payments %}%}
+                {% for payment in recent_payments %}
                 <tr>
-                    <td>{{ payment.created_ad|date:"M d, Y" }}</td>
+                    <td>{{ payment.created_at|date:"M d, Y" }}</td>
                     <td>{{ payment.transaction_id }}</td>
                     <td>${{ payment.amount }}</td>
                     <td>{{ payment.payment_method|title }}</td>
                     <td class="status-{{ payment.status }}">{{ payment.status|title }}</td>
                 </tr>
-                {% endfor }
+                {% endfor %}
             {% else %}
                 <tr>
                     <td colspan="5" style="text-align: center; color: #4a4a4aff;">
@@ -382,6 +382,12 @@
 
       if (!email || !email.includes("@")) {
         alert("Please enter a valid email address");
+        return;
+      }
+
+      // Check if payment method is selected
+      if (!selectedMethod){
+        alert("Please select a payment method");
         return;
       }
 

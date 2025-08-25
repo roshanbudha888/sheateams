@@ -141,7 +141,7 @@ def send_payment_request(request):
             conversation.participants.add(request.user, admin_user)
             
         # Create PaymentRequest immediately with 'pending' status
-        transaction_id = f"TXN{datetime.now().strftime('%Y%m%d%H%H%S')}{str(uuid.uuid4[:8].upper())}"
+        transaction_id = f"TXN{datetime.now().strftime('%Y%m%d%H%M%S')}{str(uuid.uuid4())[:8].upper()}"
 
         payment_request = PaymentRequest.objects.create(
             user=request.user,
@@ -154,7 +154,7 @@ def send_payment_request(request):
         )
         # Simple payment request message
         payment_message = f"""PAYMENT REQUEST
-Transaction ID: ${amount}
+Transaction ID: {transaction_id}
 Amount: ${amount}
 Email: {email}
 Payment Method: {payment_method.upper()}
