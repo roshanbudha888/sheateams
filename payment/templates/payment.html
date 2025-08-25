@@ -1,394 +1,435 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block title %}Payment{% endblock %}
-
+{% extends "base.html" %} {% load static %} {% block title %}Payment{% endblock%} 
 {% block extra_css %}
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    .payment-wrapper {
-        background: linear-gradient(135deg, #04204aff 0%, #083377ff 100%);
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-    }
-    
-    .payment-container {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(51, 7, 138, 0.89);
-        width: 100%;
-        max-width: 1000px;
-        overflow: hidden;
-        margin: 20px 0;
-    }
-    
-    .header {
-        background: #0b2693ff;
-        color: white;
-        padding: 25px;
-        text-align: center;
-    }
-    
-    .header h1 {
-        font-size: 28px;
-        margin-bottom: 10px;
-    }
-    
-    .header p {
-        opacity: 0.9;
-    }
-    
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .payment-wrapper {
+    background: linear-gradient(135deg, #04204aff 0%, #083377ff 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .payment-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(51, 7, 138, 0.89);
+    width: 100%;
+    max-width: 1000px;
+    overflow: hidden;
+    margin: 20px 0;
+  }
+
+  .header {
+    background: #0b2693ff;
+    color: white;
+    padding: 25px;
+    text-align: center;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+
+  .header p {
+    opacity: 0.9;
+  }
+
+  .payment-content {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .payment-form {
+    flex: 1;
+    min-width: 300px;
+    padding: 25px;
+    background: #062158ff;
+  }
+
+  .payment-options {
+    flex: 1;
+    min-width: 300px;
+    padding: 25px;
+    border-left: 1px solid #1fd89dff;
+  }
+
+  .section-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #2a1684ff;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #24047eff;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #3212c5ff;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #3608aaff;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: #1135c7ff;
+    box-shadow: 0 0 0 3px rgba(15, 59, 233, 0.84);
+  }
+
+  .payment-methods {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 25px;
+  }
+
+  .payment-method {
+    background: white;
+    border: 1px solid #460dcbff;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .payment-method:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(20, 8, 100, 1);
+    border-color: #041453ff;
+  }
+
+  .payment-method.selected {
+    border-color: #1333b1ff;
+    background-color: rgba(74, 108, 247, 0.05);
+  }
+
+  .payment-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: #3c12e2ff;
+  }
+
+  .payment-icon img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .payment-icon i {
+    font-size: 32px;
+    color: #113be2ff;
+  }
+
+  .payment-method h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #1448a3ff;
+  }
+
+  .payment-method p {
+    font-size: 14px;
+    color: #3f0df0ff;
+  }
+
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: #123ce2ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn:hover {
+    background: #0d30cbff;
+    transform: translateY(-2px);
+  }
+
+  .transaction-history {
+    padding: 25px;
+    border-top: 1px solid #1d0be0ff;
+  }
+
+  .transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+
+  .transaction-table th,
+  .transaction-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #6e1ae4ff;
+  }
+
+  .transaction-table th {
+    background: #101015e7;
+    font-weight: 600;
+    color: #e1ebefff;
+  }
+
+  .status-completed {
+    color: #1220b8e2;
+    font-weight: 500;
+  }
+
+  .status-pending {
+    color: #d69e2e;
+    font-weight: 500;
+  }
+
+  .status-failed {
+    color: #e53e3e;
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
     .payment-content {
-        display: flex;
-        flex-wrap: wrap;
+      flex-direction: column;
     }
-    
-    .payment-form {
-        flex: 1;
-        min-width: 300px;
-        padding: 25px;
-        background: #062158ff;
-    }
-    
+
     .payment-options {
-        flex: 1;
-        min-width: 300px;
-        padding: 25px;
-        border-left: 1px solid #1fd89dff;
+      border-left: none;
+      border-top: 1px solid #270688ff;
     }
-    
-    .section-title {
-        font-size: 20px;
-        margin-bottom: 20px;
-        color: #2a1684ff;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #24047eff;
-    }
-    
-    .form-group {
-        margin-bottom: 20px;
-    }
-    
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 500;
-        color: #3212c5ff;
-    }
-    
-    .form-group input {
-        width: 100%;
-        padding: 12px 15px;
-        border: 1px solid #3608aaff;
-        border-radius: 6px;
-        font-size: 16px;
-        transition: all 0.3s ease;
-    }
-    
-    .form-group input:focus {
-        outline: none;
-        border-color: #1135c7ff;
-        box-shadow: 0 0 0 3px rgba(15, 59, 233, 0.84);
-    }
-    
-    .payment-methods {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 20px;
-        margin-top: 25px;
-    }
-    
-    .payment-method {
-        background: white;
-        border: 1px solid #460dcbff;
-        border-radius: 10px;
-        padding: 20px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    
-    .payment-method:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(20, 8, 100, 1);
-        border-color: #041453ff;
-    }
-    
-    .payment-method.selected {
-        border-color: #1333b1ff;
-        background-color: rgba(74, 108, 247, 0.05);
-    }
-    
-    .payment-icon {
-        width: 70px;
-        height: 70px;
-        margin: 0 auto 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 10px;
-        background: #3c12e2ff;
-    }
-    
-    .payment-icon img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-    }
-    
-    .payment-icon i {
-        font-size: 32px;
-        color: #113be2ff;
-    }
-    
-    .payment-method h3 {
-        font-size: 16px;
-        margin-bottom: 8px;
-        color: #1448a3ff;
-    }
-    
-    .payment-method p {
-        font-size: 14px;
-        color: #3f0df0ff;
-    }
-    
-    .btn {
-        display: block;
-        width: 100%;
-        padding: 14px;
-        background: #123ce2ff;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    
-    .btn:hover {
-        background: #0d30cbff;
-        transform: translateY(-2px);
-    }
-    
-    .transaction-history {
-        padding: 25px;
-        border-top: 1px solid #1d0be0ff;
-    }
-    
-    .transaction-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-    }
-    
-    .transaction-table th,
-    .transaction-table td {
-        padding: 12px 15px;
-        text-align: left;
-        border-bottom: 1px solid #6e1ae4ff;
-    }
-    
-    .transaction-table th {
-        background: #101015e7;
-        font-weight: 600;
-        color: #e1ebefff;
-    }
-    
-    .status-completed {
-        color: #1220b8e2;
-        font-weight: 500;
-    }
-    
-    .status-pending {
-        color: #d69e2e;
-        font-weight: 500;
-    }
-    
-    .status-failed {
-        color: #e53e3e;
-        font-weight: 500;
-    }
-    
-    @media (max-width: 768px) {
-        .payment-content {
-            flex-direction: column;
-        }
-        
-        .payment-options {
-            border-left: none;
-            border-top: 1px solid #270688ff;
-        }
-    }
+  }
 </style>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 <div class="payment-wrapper">
-    <div class="payment-container">
-        <div class="header">
-            <h1>Payment Options</h1>
-            <p>Choose your preferred payment method</p>
-        </div>
-        
-        <div class="payment-content">
-            <div class="payment-form">
-                <h2 class="section-title">Make a Payment</h2>
-                
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="amount">Amount (USD)</label>
-                        <input type="number" id="amount" name="amount" placeholder="Enter amount" min="1" step="0.01" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" placeholder="Your email address" required>
-                    </div>
-                    
-                    <button type="submit" class="btn" id="pay-button">Process Payment</button>
-                </form>
-            </div>
-            
-            <div class="payment-options">
-                <h2 class="section-title">Payment Methods</h2>
-                
-                <div class="payment-methods">
-                    <div class="payment-method selected" data-method="cashapp">
-                        <div class="payment-icon">
-                            <img src="{% static 'img/CA.jpg' %}" alt="Cash App">
-                        </div>
-                        <h3>Cash App</h3>
-                        <p>Secure payments with Cash App</p>
-                    </div>
-                    
-                    <div class="payment-method" data-method="chime">
-                        <div class="payment-icon">
-                            <img src="{% static 'img/CH.jpg' %}" alt="Chime">
-                        </div>
-                        <h3>Chime</h3>
-                        <p>Fast and secure with Chime</p>
-                    </div>
-                    
-                  
-                </div>
-            </div>
-        </div>
-        
-        <div class="transaction-history">
-            <h2 class="section-title">Recent Transactions</h2>
-            
-            <table class="transaction-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Amount</th>
-                        <th>Method</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Aug 20, 2025</td>
-                        <td>Online Purchase</td>
-                        <td>$49.99</td>
-                        <td>Cash App</td>
-                        <td class="status-completed">Completed</td>
-                    </tr>
-                    <tr>
-                        <td>Aug 18, 2025</td>
-                        <td>Grocery Store</td>
-                        <td>$87.50</td>
-                        <td>Chime</td>
-                        <td class="status-completed">Completed</td>
-                    </tr>
-                    <tr>
-                        <td>Aug 15, 2025</td>
-                        <td>Subscription Renewal</td>
-                        <td>$14.99</td>
-                        <td>Credit Card</td>
-                        <td class="status-pending">Pending</td>
-                    </tr>
-                    <tr>
-                        <td>Aug 12, 2025</td>
-                        <td>Restaurant Payment</td>
-                        <td>$63.40</td>
-                        <td>PayPal</td>
-                        <td class="status-failed">Failed</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+  <div class="payment-container">
+    <div class="header">
+      <h1>Payment Options</h1>
+      <p>Choose your preferred payment method</p>
     </div>
-</div>
-{% endblock %}
 
-{% block extra_js %}
+    <div class="payment-content">
+      <div class="payment-form">
+        <h2 class="section-title">Make a Payment</h2>
+
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="amount">Amount (USD)</label>
+            <input
+              type="number"
+              id="amount"
+              name="amount"
+              placeholder="Enter amount"
+              min="1"
+              step="0.01"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Your email address"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn" id="pay-button">
+            Process Payment
+          </button>
+        </form>
+      </div>
+
+      <div class="payment-options">
+        <h2 class="section-title">Payment Methods</h2>
+
+        <div class="payment-methods">
+          <div class="payment-method selected" data-method="cashapp">
+            <div class="payment-icon">
+              <img src="{% static 'img/CA.jpg' %}" alt="Cash App" />
+            </div>
+            <h3>Cash App</h3>
+            <p>Secure payments with Cash App</p>
+          </div>
+
+          <div class="payment-method" data-method="chime">
+            <div class="payment-icon">
+              <img src="{% static 'img/CH.jpg' %}" alt="Chime" />
+            </div>
+            <h3>Chime</h3>
+            <p>Fast and secure with Chime</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="transaction-history">
+      <h2 class="section-title">Recent Transactions</h2>
+
+      <table class="transaction-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Transaction ID</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% if recent_payments %}
+                {% for payment in recent_payments %}%}
+                <tr>
+                    <td>{{ payment.created_ad|date:"M d, Y" }}</td>
+                    <td>{{ payment.transaction_id }}</td>
+                    <td>${{ payment.amount }}</td>
+                    <td>{{ payment.payment_method|title }}</td>
+                    <td class="status-{{ payment.status }}">{{ payment.status|title }}</td>
+                </tr>
+                {% endfor }
+            {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; color: #4a4a4aff;">
+                        No transaction yet
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Payment method selection
-        const paymentMethods = document.querySelectorAll('.payment-method');
-        
-        paymentMethods.forEach(method => {
-            method.addEventListener('click', function() {
-                // Remove selected class from all methods
-                paymentMethods.forEach(m => m.classList.remove('selected'));
-                
-                // Add selected class to clicked method
-                this.classList.add('selected');
-                
-                // Update a hidden input field with the selected method (if needed)
-                const selectedMethod = this.getAttribute('data-method');
-                document.getElementById('selected-method').value = selectedMethod;
-            });
-        });
-        
-        // Process payment button
-        const payButton = document.getElementById('pay-button');
-        const paymentForm = document.querySelector('.payment-form form');
-        
-        paymentForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const amount = document.getElementById('amount').value;
-            const email = document.getElementById('email').value;
-            const selectedMethod = document.querySelector('.payment-method.selected').getAttribute('data-method');
-            
-            if (!amount || amount <= 0) {
-                alert('Please enter a valid amount');
-                return;
-            }
-            
-            if (!email || !email.includes('@')) {
-                alert('Please enter a valid email address');
-                return;
-            }
-            
-            // Simulate payment processing
-            payButton.textContent = 'Processing...';
-            payButton.disabled = true;
-            
-            setTimeout(function() {
-                alert(`Payment of $${amount} processed successfully with ${selectedMethod.toUpperCase()}!`);
-                payButton.textContent = 'Process Payment';
-                payButton.disabled = false;
-                
-                // Clear form
-                document.getElementById('amount').value = '';
-                document.getElementById('email').value = '';
-            }, 2000);
+  document.addEventListener("DOMContentLoaded", function () {
+    // Payment method selection
+    const paymentMethods = document.querySelectorAll(".payment-method");
+
+    paymentMethods.forEach((method) => {
+      method.addEventListener("click", function () {
+        paymentMethods.forEach((m) => m.classList.remove("selected"));
+        this.classList.add("selected");
+      });
+    });
+
+    // Payment form submission
+    const payButton = document.getElementById("pay-button");
+    const paymentForm = document.querySelector(".payment-form form");
+
+    paymentForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const amount = document.getElementById("amount").value;
+      const email = document.getElementById("email").value;
+      const selectedMethod = document
+        .querySelector(".payment-method.selected")
+        .getAttribute("data-method");
+
+      if (!amount || amount <= 0) {
+        alert("Please enter a valid amount");
+        return;
+      }
+
+      if (!email || !email.includes("@")) {
+        alert("Please enter a valid email address");
+        return;
+      }
+
+      // Show processing state
+      payButton.textContent = "Sending...";
+      payButton.disabled = true;
+
+      // Send payment request to admin via chat
+      sendPaymentToChat(amount, email, selectedMethod)
+        .then((response) => {
+          if (response.success) {
+            alert(
+              "Payment request sent to admin! Please check the chat for your QR code."
+            );
+            // Clear form
+            document.getElementById("amount").value = "";
+            document.getElementById("email").value = "";
+            // Redirect to chat
+            window.location.href = "/chat/";
+          } else {
+            alert("Failed to send payment request. Please try again.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Error sending request. Please try again.");
+        })
+        .finally(() => {
+          payButton.textContent = "Process Payment";
+          payButton.disabled = false;
         });
     });
+  });
+
+  async function sendPaymentToChat(amount, email, paymentMethod) {
+    try {
+      const response = await fetch("/chat/send-payment-request/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: JSON.stringify({
+          amount: amount,
+          email: email,
+          payment_method: paymentMethod,
+        }),
+      });
+
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
 </script>
 {% endblock %}

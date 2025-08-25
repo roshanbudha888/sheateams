@@ -1,3 +1,4 @@
+# chat/consumer.py
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
@@ -49,9 +50,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             sender_id = self.scope['user'].id
 
             # If an image is sent, save it to the Message model
+            image_url = None
             if image_data:
                 # Save the image to the Message model and get the image object
                 message_obj = await self.save_message_with_image(image_data, sender_id)
+                image_url = message_obj.image.url
                 message = None  # Set message content to image URL
             else:
                 # Save the text message only
@@ -66,7 +69,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'content': message,
                     'sender_id': sender_id,
                     'message_id': message_obj.id,
-                    'timestamp': message_obj.timestamp.isoformat()
+                    'timestamp': message_obj.timestamp.isoformat(),
+                    'image_url': image_url
                 }
             )
             print("success msg",text_data)
@@ -83,6 +87,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         sender_id = event['sender_id']
         message_id = event['message_id']
         timestamp = event['timestamp']
+        image_url = event.get('image_url', None)
 
         # Get sender username
         username = await self.get_username(sender_id)
@@ -93,7 +98,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'sender_id': sender_id,
             'sender_username': username,
             'message_id': message_id,
-            'timestamp': timestamp
+            'timestamp': timestamp,
+            'image_url': image_url
+            
         }))
 
     @database_sync_to_async
@@ -154,3 +161,48 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         # print("success message with image",message)
         return message
+    
+
+# chat/consumer.py - Add payment status handling
+async def receive(self, text_data):
+    try:
+        text_data_json = json.loads(text_data)
+        message_type = text_data_json.get('type', 'message')
+        
+        if message_type == 'payment_verification':
+            # Handle payment verification from admin
+            await self.handle_payment_verification(text_data_json)
+        else:
+            # Handle regular messages (your existing code)
+            await self.handle_regular_message(text_data_json)
+            
+    except Exception as e:
+        print(f"Error in receive: {e}")
+        await self.send(text_data=json.dumps({
+            'error': 'Failed to process message'
+        }))
+
+async def handle_payment_verification(self, data):
+    """Handle payment verification from admin via WebSocket"""
+    if not self.scope['user'].is_superuser:
+        await self.send(text_data=json.dumps({
+            'error': 'Unauthorized'
+        }))
+        return
+    
+    transaction_id = data.get('transaction_id')
+    action = data.get('action', 'complete')
+    
+    # You can implement WebSocket-based verification here
+    # For now, we'll rely on the HTTP endpoint
+    pass
+
+# Add this method to handle payment status updates
+async def payment_status_update(self, event):
+    """Send payment status updates to WebSocket clients"""
+    await self.send(text_data=json.dumps({
+        'type': 'payment_status',
+        'transaction_id': event['transaction_id'],
+        'status': event['status'],
+        'message': event['message']
+    }))

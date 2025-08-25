@@ -647,5 +647,48 @@
         // Scroll to bottom on page load
         scrollToBottom();
     });
+
+    // Add to chat.html JavaScript section
+function handleIncomingMessage(data) {
+    if (data.error) {
+        console.error('WebSocket error:', data.error);
+        return;
+    }
+    
+    // Handle payment status updates
+    if (data.type === 'payment_status') {
+        handlePaymentStatusUpdate(data);
+        return;
+    }
+    
+    // Handle regular messages (your existing code)
+    if (data.sender_id != currentUserId) {
+        const messageType = 'received';
+        addMessage(data.message, messageType, data.image_url, data.timestamp, data.sender_username);
+    }
+}
+
+function handlePaymentStatusUpdate(data) {
+    // Show payment status notification
+    const notification = document.createElement('div');
+    notification.className = 'payment-notification';
+    notification.innerHTML = `
+        <strong>Payment Update</strong><br>
+        Transaction: ${data.transaction_id}<br>
+        Status: ${data.status.toUpperCase()}
+    `;
+    
+    // Add to chat or show as popup
+    addMessage(data.message, 'received', null, null, 'System');
+    
+    // If payment completed, offer to redirect to success page
+    if (data.status === 'completed') {
+        setTimeout(() => {
+            if (confirm('Payment completed! Would you like to view the success page?')) {
+                window.location.href = `/payment/success/?transaction_id=${data.transaction_id}`;
+            }
+        }, 2000);
+    }
+}
 </script>
 {% endblock %}
