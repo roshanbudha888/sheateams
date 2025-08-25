@@ -75,9 +75,25 @@
           },
           "retina_detect": true
       });
+$(document).ready(function () {
+    const $mobileMenu = $('.mobile-menu');
+    const breakpoint = 992; // Same as CSS media query breakpoint
 
-      // Mobile menu toggle
-      $('.mobile-menu-btn').click(function() {
-          $('.mobile-menu').slideToggle();
-      });
+  // Mobile menu toggle
+  $(".mobile-menu-btn").click(function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    $(".mobile-menu").toggleClass('active');
+  });
+
+  $(window).resize(function(){
+    //if window width is larger than breakpoint
+    if ($(window).width() > breakpoint){
+        //Ensure the mobile menu is hidden
+        if ($mobileMenu.hasClass('active')){
+            $mobileMenu.removeClass('active');
+        }
+    }
+  });
+});
   });
