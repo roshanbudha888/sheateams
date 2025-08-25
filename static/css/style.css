@@ -1,11 +1,11 @@
     /* Consolidated CSS with improved responsiveness */
     
      :root {
-        --primary-color: #4e54c8;
-        --secondary-color: #8f94fb;
-        --dark-color: #1a1a2e;
-        --darker-color: #16213e;
-        --light-color: #f8f9fa;
+        --primary-color: #8a1254;
+        --secondary-color: #696cc8;
+        --dark-color: #21362a;
+        --darker-color: #133aa7;
+        --light-color: #263f57;
         --success-color: #28a745;
         --danger-color: #dc3545;
         --warning-color: #ffc107;
@@ -21,7 +21,7 @@
     
     body {
         background: linear-gradient(135deg, var(--dark-color), var(--darker-color));
-        color: white;
+        color: rgb(22, 74, 55);
         min-height: 100vh;
         line-height: 1.6;
         overflow-x: hidden;
@@ -70,7 +70,7 @@
         background: rgba(26, 26, 46, 0.9);
         backdrop-filter: blur(10px);
         z-index: 1000;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 10px rgba(214, 197, 197, 0.922);
     }
     
     .nav-container {
@@ -97,6 +97,7 @@
     .logo span {
         font-weight: 600;
         font-size: 1.2rem;
+        color: white;
     }
     
     .nav-links {
