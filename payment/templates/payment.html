@@ -28,19 +28,158 @@
   }
 
   .header {
-    background: #0b2693ff;
+    background: linear-gradient(135deg, #0b2693ff 0%, #1e3a8a 100%);
     color: white;
     padding: 25px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+    pointer-events: none;
   }
 
   .header h1 {
-    font-size: 28px;
+    font-size: 32px;
     margin-bottom: 10px;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
   }
 
   .header p {
     opacity: 0.9;
+    font-size: 16px;
+    font-weight: 300;
+  }
+
+  /* Messages Styling */
+  .messages-container {
+    padding: 20px 25px;
+    background: white;
+  }
+
+  .alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    font-weight: 500;
+    animation: slideInDown 0.3s ease-out;
+    border-left: 4px solid;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  .alert-content {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  .alert-icon {
+    margin-right: 12px;
+    font-size: 20px;
+  }
+
+  .alert-text {
+    flex: 1;
+  }
+
+  .alert-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px;
+    margin-left: 15px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+    border-radius: 50%;
+  }
+
+  .alert-close:hover {
+    opacity: 1;
+    background: rgba(0,0,0,0.1);
+  }
+
+  /* Success Messages */
+  .alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+    border-left-color: #28a745;
+  }
+
+  .alert-success .alert-icon {
+    color: #28a745;
+  }
+
+  .alert-success .alert-close {
+    color: #155724;
+  }
+
+  /* Error Messages */
+  .alert-error {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+    border-left-color: #dc3545;
+  }
+
+  .alert-error .alert-icon {
+    color: #dc3545;
+  }
+
+  .alert-error .alert-close {
+    color: #721c24;
+  }
+
+  /* Warning Messages */
+  .alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    color: #856404;
+    border-left-color: #ffc107;
+  }
+
+  .alert-warning .alert-icon {
+    color: #ffc107;
+  }
+
+  .alert-warning .alert-close {
+    color: #856404;
+  }
+
+  /* Info Messages */
+  .alert-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    color: #0c5460;
+    border-left-color: #17a2b8;
+  }
+
+  .alert-info .alert-icon {
+    color: #17a2b8;
+  }
+
+  .alert-info .alert-close {
+    color: #0c5460;
+  }
+
+  @keyframes slideInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .payment-content {
@@ -51,168 +190,336 @@
   .payment-form {
     flex: 1;
     min-width: 300px;
-    padding: 25px;
-    background: #062158ff;
+    padding: 30px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-right: 1px solid #e2e8f0;
   }
 
   .payment-options {
     flex: 1;
     min-width: 300px;
-    padding: 25px;
-    border-left: 1px solid #1fd89dff;
+    padding: 30px;
+    background: white;
   }
 
   .section-title {
-    font-size: 20px;
-    margin-bottom: 20px;
-    color: #2a1684ff;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #24047eff;
+    font-size: 24px;
+    margin-bottom: 25px;
+    color: #1a202c;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #667eea;
+    position: relative;
+    font-weight: 700;
+  }
+
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 2px;
   }
 
   .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
   }
 
   .form-group label {
     display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #3212c5ff;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 16px;
   }
 
   .form-group input {
     width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #3608aaff;
-    border-radius: 6px;
+    padding: 16px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
     font-size: 16px;
     transition: all 0.3s ease;
+    background: white;
+    color: #2d3748;
   }
 
   .form-group input:focus {
     outline: none;
-    border-color: #1135c7ff;
-    box-shadow: 0 0 0 3px rgba(15, 59, 233, 0.84);
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .form-group input::placeholder {
+    color: #a0aec0;
+    font-weight: 400;
   }
 
   .payment-methods {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     margin-top: 25px;
   }
 
   .payment-method {
-    background: white;
-    border: 1px solid #460dcbff;
-    border-radius: 10px;
-    padding: 20px;
+    background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 25px;
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .payment-method::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
   .payment-method:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(20, 8, 100, 1);
-    border-color: #041453ff;
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+    border-color: #667eea;
+  }
+
+  .payment-method:hover::before {
+    opacity: 1;
   }
 
   .payment-method.selected {
-    border-color: #1333b1ff;
-    background-color: rgba(74, 108, 247, 0.05);
+    border-color: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+  }
+
+  .payment-method.selected h3,
+  .payment-method.selected p {
+    color: white;
+  }
+
+  .payment-method.selected .payment-icon {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
   }
 
   .payment-icon {
-    width: 70px;
-    height: 70px;
-    margin: 0 auto 15px;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
-    background: #3c12e2ff;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+    transition: all 0.3s ease;
   }
 
   .payment-icon img {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 60px;
+    max-height: 60px;
     object-fit: contain;
+    border-radius: 8px;
   }
 
   .payment-icon i {
-    font-size: 32px;
-    color: #113be2ff;
+    font-size: 36px;
+    color: #667eea;
   }
 
   .payment-method h3 {
-    font-size: 16px;
-    margin-bottom: 8px;
-    color: #1448a3ff;
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #2d3748;
+    font-weight: 600;
   }
 
   .payment-method p {
     font-size: 14px;
-    color: #3f0df0ff;
+    color: #718096;
+    font-weight: 400;
   }
 
   .btn {
     display: block;
     width: 100%;
-    padding: 14px;
-    background: #123ce2ff;
+    padding: 18px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 600;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
   }
 
   .btn:hover {
-    background: #0d30cbff;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn:hover::before {
+    left: 100%;
+  }
+
+  .btn:disabled {
+    background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* QR Code Display */
+  .qr-display {
+    margin-top: 25px;
+    padding: 25px;
+    background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
+    border-radius: 16px;
+    border: 2px solid #e2e8f0;
+    text-align: center;
+    display: none;
+    animation: fadeInUp 0.5s ease-out;
+  }
+
+  .qr-display.show {
+    display: block;
+  }
+
+  .qr-display h3 {
+    color: #2d3748;
+    margin-bottom: 15px;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .qr-display img {
+    max-width: 200px;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  }
+
+  .qr-display p {
+    margin-top: 15px;
+    color: #718096;
+    font-size: 14px;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .transaction-history {
-    padding: 25px;
-    border-top: 1px solid #1d0be0ff;
+    padding: 30px;
+    border-top: 1px solid #e2e8f0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   }
 
   .transaction-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
+    margin-top: 20px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
   }
 
   .transaction-table th,
   .transaction-table td {
-    padding: 12px 15px;
+    padding: 15px 20px;
     text-align: left;
-    border-bottom: 1px solid #6e1ae4ff;
+    border-bottom: 1px solid #e2e8f0;
   }
 
   .transaction-table th {
-    background: #101015e7;
+    background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
     font-weight: 600;
-    color: #e1ebefff;
+    color: white;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .transaction-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .transaction-table tr:hover {
+    background: #f7fafc;
   }
 
   .status-completed {
-    color: #1220b8e2;
-    font-weight: 500;
+    color: #38a169;
+    font-weight: 600;
+    background: #f0fff4;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
   }
 
   .status-pending {
     color: #d69e2e;
-    font-weight: 500;
+    font-weight: 600;
+    background: #fffbf0;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+  }
+
+  .status-qr_sent {
+    color: #3182ce;
+    font-weight: 600;
+    background: #ebf8ff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
   }
 
   .status-failed {
     color: #e53e3e;
-    font-weight: 500;
+    font-weight: 600;
+    background: #fed7d7;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
   }
 
   @media (max-width: 768px) {
@@ -220,93 +527,122 @@
       flex-direction: column;
     }
 
-    .payment-options {
-      border-left: none;
-      border-top: 1px solid #270688ff;
+    .payment-form {
+      border-right: none;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .payment-methods {
+      grid-template-columns: 1fr;
     }
   }
-
-  .status-pending {
-    color: #d69e2e;
-    font-weight: 500;
-}
-
-.status-qr_sent {
-    color: #3182ce;
-    font-weight: 500;
-}
-
-.status-completed {
-    color: #38a169;
-    font-weight: 500;
-}
-
-.status-failed {
-    color: #e53e3e;
-    font-weight: 500;
-}
 </style>
-{% endblock %} {% block content %}
+{% endblock %} 
+
+{% block content %}
 <div class="payment-wrapper">
   <div class="payment-container">
     <div class="header">
-      <h1>Payment Options</h1>
-      <p>Choose your preferred payment method</p>
+      <h1>💳 Payment Options</h1>
+      <p>Choose your preferred payment method and complete your transaction securely</p>
     </div>
+
+    <!-- Messages Section -->
+    {% if messages %}
+    <div class="messages-container">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible">
+        <div class="alert-content">
+          <div class="alert-icon">
+            {% if message.tags == 'success' %}
+              <i class="fas fa-check-circle"></i>
+            {% elif message.tags == 'error' %}
+              <i class="fas fa-exclamation-circle"></i>
+            {% elif message.tags == 'warning' %}
+              <i class="fas fa-exclamation-triangle"></i>
+            {% else %}
+              <i class="fas fa-info-circle"></i>
+            {% endif %}
+          </div>
+          <div class="alert-text">
+            {{ message }}
+          </div>
+        </div>
+        <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
 
     <div class="payment-content">
       <div class="payment-form">
-        <h2 class="section-title">Make a Payment</h2>
+        <h2 class="section-title">💰 Make a Payment</h2>
 
-        <form method="post">
+        <form method="post" action="{% url 'payment:payment' %}" id="payment-form">
           {% csrf_token %}
+          
+          <!-- Hidden field for payment method -->
+          <input type="hidden" id="payment_method" name="payment_method" value="">
+          
           <div class="form-group">
-            <label for="amount">Amount (USD)</label>
+            <label for="amount">💵 Amount (USD)</label>
             <input
               type="number"
               id="amount"
               name="amount"
-              placeholder="Enter amount"
+              placeholder="💲 Enter amount (e.g., 100.00)"
               min="1"
               step="0.01"
               required
+              value="{{ request.POST.amount|default:'' }}"
             />
           </div>
 
           <div class="form-group">
-            <label for="email">Email Address</label>
+            <label for="email">📧 Email Address</label>
             <input
               type="email"
               id="email"
               name="email"
-              placeholder="Your email address"
+              placeholder="✉️ your.email@example.com"
               required
+              value="{{ request.POST.email|default:'' }}"
             />
           </div>
 
           <button type="submit" class="btn" id="pay-button">
-            Process Payment
+            🚀 Process Payment
           </button>
         </form>
+
+        <!-- QR Code Display -->
+        <div id="qr-display" class="qr-display">
+          <h3>📱 Scan QR Code to Pay</h3>
+          <img id="qr-image" src="" alt="Payment QR Code">
+          <p>Scan this code with your selected payment app to complete the transaction</p>
+        </div>
       </div>
 
       <div class="payment-options">
-        <h2 class="section-title">Payment Methods</h2>
+        <h2 class="section-title">🎯 Payment Methods</h2>
+        <p style="color: #718096; margin-bottom: 20px;">Please select a payment method to continue:</p>
 
         <div class="payment-methods">
-          <div class="payment-method selected" data-method="cashapp">
+          <div class="payment-method" data-method="cashapp" data-qr="{% static 'img/cashapp-qr.png' %}">
             <div class="payment-icon">
               <img src="{% static 'img/CA.jpg' %}" alt="Cash App" />
             </div>
-            <h3>Cash App</h3>
+            <h3>💚 Cash App</h3>
             <p>Secure payments with Cash App</p>
           </div>
 
-          <div class="payment-method" data-method="chime">
+          <div class="payment-method" data-method="chime" data-qr="{% static 'img/chime-qr.png' %}">
             <div class="payment-icon">
               <img src="{% static 'img/CH.jpg' %}" alt="Chime" />
             </div>
-            <h3>Chime</h3>
+            <h3>🏦 Chime</h3>
             <p>Fast and secure with Chime</p>
           </div>
         </div>
@@ -314,16 +650,16 @@
     </div>
 
     <div class="transaction-history">
-      <h2 class="section-title">Recent Transactions</h2>
+      <h2 class="section-title">📊 Recent Transactions</h2>
 
       <table class="transaction-table">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Transaction ID</th>
-            <th>Amount</th>
-            <th>Method</th>
-            <th>Status</th>
+            <th>📅 Date</th>
+            <th>🆔 Transaction ID</th>
+            <th>💰 Amount</th>
+            <th>💳 Method</th>
+            <th>📈 Status</th>
           </tr>
         </thead>
         <tbody>
@@ -331,16 +667,16 @@
                 {% for payment in recent_payments %}
                 <tr>
                     <td>{{ payment.created_at|date:"M d, Y" }}</td>
-                    <td>{{ payment.transaction_id }}</td>
+                    <td>{{ payment.transaction_id|truncatechars:20 }}</td>
                     <td>${{ payment.amount }}</td>
                     <td>{{ payment.payment_method|title }}</td>
-                    <td class="status-{{ payment.status }}">{{ payment.status|title }}</td>
+                    <td><span class="status-{{ payment.status }}">{{ payment.get_status_display }}</span></td>
                 </tr>
                 {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan="5" style="text-align: center; color: #4a4a4aff;">
-                        No transaction yet
+                    <td colspan="5" style="text-align: center; color: #718096; padding: 40px;">
+                        🎭 No transactions yet - Make your first payment above!
                     </td>
                 </tr>
             {% endif %}
@@ -349,100 +685,178 @@
     </div>
   </div>
 </div>
-{% endblock %} {% block extra_js %}
+{% endblock %} 
+
+{% block extra_js %}
 <script>
+  const qrCodes = {
+    'cashapp': {
+        src: 'static/img/cashapp-qr.png',
+        title: '💚 Cash App - Scan to Pay',
+        instruction: 'Open Cash App and scan this QR code...'
+    },
+    'chime': {
+        src: 'static/img/chime-qr.png', 
+        title: '🏦 Chime - Scan to Pay',
+        instruction: 'Open Chime app and scan this QR code...'
+    }
+};
   document.addEventListener("DOMContentLoaded", function () {
-    // Payment method selection
+    // Auto-hide messages after 5 seconds
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.style.animation = 'slideInDown 0.3s ease-out reverse';
+                setTimeout(() => alert.remove(), 300);
+            }
+        }, 5000);
+    });
+
+    // Payment method selection and QR display
     const paymentMethods = document.querySelectorAll(".payment-method");
+    const paymentMethodInput = document.getElementById("payment_method");
+    const qrDisplay = document.getElementById("qr-display");
+    const qrImage = document.getElementById("qr-image");
 
     paymentMethods.forEach((method) => {
       method.addEventListener("click", function () {
+        // Remove selection from all methods
         paymentMethods.forEach((m) => m.classList.remove("selected"));
+        
+        // Select current method
         this.classList.add("selected");
+        
+        // Update hidden field with selected payment method
+        const selectedMethod = this.getAttribute("data-method");
+        const qrSrc = this.getAttribute("data-qr");
+        
+        paymentMethodInput.value = selectedMethod;
+        
+        // Show QR code
+        if (qrSrc) {
+          qrImage.src = qrSrc;
+          qrDisplay.classList.add("show");
+          
+          // Scroll to QR code
+          setTimeout(() => {
+            qrDisplay.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 300);
+        }
       });
     });
 
-    // Payment form submission
+    // Payment form submission with validation
+    const paymentForm = document.getElementById("payment-form");
     const payButton = document.getElementById("pay-button");
-    const paymentForm = document.querySelector(".payment-form form");
 
     paymentForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-
       const amount = document.getElementById("amount").value;
       const email = document.getElementById("email").value;
-      const selectedMethod = document
-        .querySelector(".payment-method.selected")
-        .getAttribute("data-method");
+      const selectedMethod = paymentMethodInput.value;
 
-      if (!amount || amount <= 0) {
-        alert("Please enter a valid amount");
+      // Client-side validation
+      if (!amount || parseFloat(amount) <= 0) {
+        e.preventDefault();
+        showCustomAlert("⚠️ Please enter a valid amount greater than 0", "warning");
         return;
       }
 
       if (!email || !email.includes("@")) {
-        alert("Please enter a valid email address");
+        e.preventDefault();
+        showCustomAlert("⚠️ Please enter a valid email address", "warning");
         return;
       }
 
-      // Check if payment method is selected
-      if (!selectedMethod){
-        alert("Please select a payment method");
+      if (!selectedMethod) {
+        e.preventDefault();
+        showCustomAlert("⚠️ Please select a payment method first", "warning");
+        
+        // Highlight payment methods section
+        const paymentMethodsSection = document.querySelector('.payment-methods');
+        paymentMethodsSection.style.animation = 'shake 0.5s ease-in-out';
+        setTimeout(() => {
+          paymentMethodsSection.style.animation = '';
+        }, 500);
+        
         return;
       }
 
-      // Show processing state
-      payButton.textContent = "Sending...";
+      // Show loading state
+      payButton.innerHTML = "⏳ Processing...";
       payButton.disabled = true;
-
-      // Send payment request to admin via chat
-      sendPaymentToChat(amount, email, selectedMethod)
-        .then((response) => {
-          if (response.success) {
-            alert(
-              "Payment request sent to admin! Please check the chat for your QR code."
-            );
-            // Clear form
-            document.getElementById("amount").value = "";
-            document.getElementById("email").value = "";
-            // Redirect to chat
-            window.location.href = "/chat/";
-          } else {
-            alert("Failed to send payment request. Please try again.");
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          alert("Error sending request. Please try again.");
-        })
-        .finally(() => {
-          payButton.textContent = "Process Payment";
-          payButton.disabled = false;
-        });
+      
+      // Form will submit normally to Django view
     });
+
+    // Custom alert function
+    function showCustomAlert(message, type = "info") {
+      const alertDiv = document.createElement("div");
+      alertDiv.className = `alert alert-${type} alert-dismissible`;
+      alertDiv.innerHTML = `
+        <div class="alert-content">
+          <div class="alert-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="alert-text">${message}</div>
+        </div>
+        <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      
+      const messagesContainer = document.querySelector('.messages-container') || 
+                               document.createElement('div');
+      
+      if (!document.querySelector('.messages-container')) {
+        messagesContainer.className = 'messages-container';
+        document.querySelector('.payment-container').insertBefore(
+          messagesContainer, 
+          document.querySelector('.payment-content')
+        );
+      }
+      
+      messagesContainer.appendChild(alertDiv);
+      
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        if (alertDiv.parentNode) {
+          alertDiv.remove();
+        }
+      }, 5000);
+    }
+
+    // Add shake animation for validation errors
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes shake {
+        0%, 20%, 40%, 60%, 80% {
+          transform: translateX(-5px);
+        }
+        10%, 30%, 50%, 70%, 90% {
+          transform: translateX(5px);
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Restore form state if there are validation errors
+    {% if messages %}
+      {% for message in messages %}
+        {% if message.tags == 'error' %}
+          // Re-enable button if there were errors
+          payButton.innerHTML = "🚀 Process Payment";
+          payButton.disabled = false;
+          break;
+        {% endif %}
+      {% endfor %}
+    {% endif %}
   });
 
-  async function sendPaymentToChat(amount, email, paymentMethod) {
-    try {
-      const response = await fetch("/chat/send-payment-request/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": getCookie("csrftoken"),
-        },
-        body: JSON.stringify({
-          amount: amount,
-          email: email,
-          payment_method: paymentMethod,
-        }),
-      });
-
-      return await response.json();
-    } catch (error) {
-      throw error;
-    }
-  }
-
+  // Utility function to get CSRF token
   function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
