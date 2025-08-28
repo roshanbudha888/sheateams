@@ -150,6 +150,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        flex-shrink: 0;
     }
 
     .btn:hover {
@@ -159,6 +162,12 @@
     .send-btn {
         color: #4a6cf7;
         font-size: 1.2rem;
+        background-color: #4a6cf7;
+        color: white;
+    }
+
+    .send-btn:hover {
+        background-color: #3b5ce6;
     }
 
     .attach-btn {
@@ -270,6 +279,14 @@
         .message-content {
             max-width: 85%;
         }
+
+        .chat-input {
+            padding: 10px;
+        }
+
+        #messageInput {
+            font-size: 16px;
+        }
     }
 </style>
 {% endblock %}
@@ -328,7 +345,9 @@
      data-current-username="{{ current_user.username }}"
      style="display: none;"></div>
 {% endblock %}
-
+{% block footer %}
+{% comment %} NO footer for this page {% endcomment %}
+{% endblock footer %}
 {% block extra_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -404,11 +423,40 @@
                 return;
             }
             
+            // Handle payment status updates
+            if (data.type === 'payment_status') {
+                handlePaymentStatusUpdate(data);
+                return;
+            }
+            
             // Only add message if it's from another user to avoid duplicates
             // (we already show our own messages immediately)
             if (data.sender_id != currentUserId) {
                 const messageType = 'received';
                 addMessage(data.message, messageType, data.image_url, data.timestamp, data.sender_username);
+            }
+        }
+        
+        function handlePaymentStatusUpdate(data) {
+            // Show payment status notification
+            const notification = document.createElement('div');
+            notification.className = 'payment-notification';
+            notification.innerHTML = `
+                <strong>Payment Update</strong><br>
+                Transaction: ${data.transaction_id}<br>
+                Status: ${data.status.toUpperCase()}
+            `;
+            
+            // Add to chat or show as popup
+            addMessage(data.message, 'received', null, null, 'System');
+            
+            // If payment completed, offer to redirect to success page
+            if (data.status === 'completed') {
+                setTimeout(() => {
+                    if (confirm('Payment completed! Would you like to view the success page?')) {
+                        window.location.href = `/payment/success/?transaction_id=${data.transaction_id}`;
+                    }
+                }, 2000);
             }
         }
         
@@ -647,48 +695,5 @@
         // Scroll to bottom on page load
         scrollToBottom();
     });
-
-    // Add to chat.html JavaScript section
-function handleIncomingMessage(data) {
-    if (data.error) {
-        console.error('WebSocket error:', data.error);
-        return;
-    }
-    
-    // Handle payment status updates
-    if (data.type === 'payment_status') {
-        handlePaymentStatusUpdate(data);
-        return;
-    }
-    
-    // Handle regular messages (your existing code)
-    if (data.sender_id != currentUserId) {
-        const messageType = 'received';
-        addMessage(data.message, messageType, data.image_url, data.timestamp, data.sender_username);
-    }
-}
-
-function handlePaymentStatusUpdate(data) {
-    // Show payment status notification
-    const notification = document.createElement('div');
-    notification.className = 'payment-notification';
-    notification.innerHTML = `
-        <strong>Payment Update</strong><br>
-        Transaction: ${data.transaction_id}<br>
-        Status: ${data.status.toUpperCase()}
-    `;
-    
-    // Add to chat or show as popup
-    addMessage(data.message, 'received', null, null, 'System');
-    
-    // If payment completed, offer to redirect to success page
-    if (data.status === 'completed') {
-        setTimeout(() => {
-            if (confirm('Payment completed! Would you like to view the success page?')) {
-                window.location.href = `/payment/success/?transaction_id=${data.transaction_id}`;
-            }
-        }, 2000);
-    }
-}
 </script>
 {% endblock %}
