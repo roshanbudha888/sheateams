@@ -580,7 +580,7 @@
       <div class="payment-form">
         <h2 class="section-title">💰 Make a Payment</h2>
 
-        <form method="post" action="{% url 'payment:payment' %}" id="payment-form">
+        <form method="post" action="{% url 'chat:send_payment_request' %}" id="payment-form">
           {% csrf_token %}
           
           <!-- Hidden field for payment method -->
@@ -688,7 +688,7 @@
 {% endblock %} 
 
 {% block extra_js %}
-<script>
+{% comment %} <script>
   const qrCodes = {
     'cashapp': {
         src: 'static/img/cashapp-qr.png',
@@ -871,5 +871,152 @@
     }
     return cookieValue;
   }
+</script> {% endcomment %}
+// Replace the JavaScript block in your template with this simplified version
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Auto-hide messages after 5 seconds
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.style.animation = 'slideInDown 0.3s ease-out reverse';
+                setTimeout(() => alert.remove(), 300);
+            }
+        }, 5000);
+    });
+
+    // Payment method selection and QR display
+    const paymentMethods = document.querySelectorAll(".payment-method");
+    const paymentMethodInput = document.getElementById("payment_method");
+    const qrDisplay = document.getElementById("qr-display");
+    const qrImage = document.getElementById("qr-image");
+
+    paymentMethods.forEach((method) => {
+        method.addEventListener("click", function () {
+            // Remove selection from all methods
+            paymentMethods.forEach((m) => m.classList.remove("selected"));
+            
+            // Select current method
+            this.classList.add("selected");
+            
+            // Update hidden field with selected payment method
+            const selectedMethod = this.getAttribute("data-method");
+            const qrSrc = this.getAttribute("data-qr");
+            
+            paymentMethodInput.value = selectedMethod;
+            
+            // Show QR code
+            if (qrSrc) {
+                qrImage.src = qrSrc;
+                qrDisplay.classList.add("show");
+                
+                // Scroll to QR code
+                setTimeout(() => {
+                    qrDisplay.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 300);
+            }
+        });
+    });
+
+    // Form validation (client-side, before submission)
+    const paymentForm = document.getElementById("payment-form");
+    const payButton = document.getElementById("pay-button");
+
+    paymentForm.addEventListener("submit", function (e) {
+        const amount = document.getElementById("amount").value;
+        const email = document.getElementById("email").value;
+        const selectedMethod = paymentMethodInput.value;
+
+        // Client-side validation
+        if (!amount || parseFloat(amount) <= 0) {
+            e.preventDefault();
+            showCustomAlert("⚠️ Please enter a valid amount greater than 0", "warning");
+            return;
+        }
+
+        if (!email || !email.includes("@")) {
+            e.preventDefault();
+            showCustomAlert("⚠️ Please enter a valid email address", "warning");
+            return;
+        }
+
+        if (!selectedMethod) {
+            e.preventDefault();
+            showCustomAlert("⚠️ Please select a payment method first", "warning");
+            
+            // Highlight payment methods section
+            const paymentMethodsSection = document.querySelector('.payment-methods');
+            paymentMethodsSection.style.animation = 'shake 0.5s ease-in-out';
+            setTimeout(() => {
+                paymentMethodsSection.style.animation = '';
+            }, 500);
+            return;
+        }
+
+        // Show loading state (form will submit normally)
+        payButton.innerHTML = "⏳ Processing...";
+        payButton.disabled = true;
+    });
+
+    // Custom alert function for client-side validation
+    function showCustomAlert(message, type = "info") {
+        const alertDiv = document.createElement("div");
+        alertDiv.className = `alert alert-${type} alert-dismissible`;
+        alertDiv.innerHTML = `
+            <div class="alert-content">
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="alert-text">${message}</div>
+            </div>
+            <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        
+        let messagesContainer = document.querySelector('.messages-container');
+        
+        if (!messagesContainer) {
+            messagesContainer = document.createElement('div');
+            messagesContainer.className = 'messages-container';
+            document.querySelector('.payment-container').insertBefore(
+                messagesContainer, 
+                document.querySelector('.payment-content')
+            );
+        }
+        
+        messagesContainer.appendChild(alertDiv);
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+        
+        // Reset button state for client-side validation errors
+        payButton.innerHTML = "🚀 Process Payment";
+        payButton.disabled = false;
+    }
+
+    // Add shake animation for validation errors
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes shake {
+            0%, 20%, 40%, 60%, 80% {
+                transform: translateX(-5px);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(5px);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+});
 </script>
 {% endblock %}

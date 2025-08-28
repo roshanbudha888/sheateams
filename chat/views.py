@@ -7,6 +7,8 @@ from .models import Conversation, Message
 from .forms import MessageForm
 
 import json
+from django.contrib import messages
+from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -120,20 +122,39 @@ def get_unread_count(request):
 @require_http_methods(["POST"])
 def send_payment_request(request):
     try:
-        data = json.loads(request.body)
-        amount = data.get('amount')
-        email = data.get('email')
-        payment_method = data.get('payment_method')
+        # Get data from form POST (not JSON)
+        amount = request.POST.get('amount')
+        email = request.POST.get('email')
+        payment_method = request.POST.get('payment_method')
 
         # Validate input
-        if not amount or float(amount) <= 0:
-            return JsonResponse({'success': False, 'error':"Invalid amount"})
+        if not amount:
+            messages.error(request, "Amount is required")
+            return redirect('payment:payment') #Redirect to payment page
+        
+        try:
+            amount_float = float(amount)
+            if amount_float <= 0:
+                messages.error(request, "Amount must be greater than 0")
+                return redirect('payment:payment')
+        except ValueError:
+            messages.error(request, "Invalid amount format")
+            return redirect('payment:payment')
+        
+        if not email or '@' not in email:
+            messages.error(request, "Valid email address is required")
+            return redirect('payment:payment')
+        
+        # if not payment_method:
+        #     messages.error(request, "Please select a payment method")
+        #     return redirect('payment:payment')
 
         # Get or create conversation with admin
         admin_user = User.objects.filter(is_superuser=True).first()
 
         if not admin_user:
-            return JsonResponse({'success': False, 'error': 'No admin user found'})
+            messages.error(request, 'No admin user found')
+            return redirect('payment:payment')
         
         conversation, created = Conversation.objects.get_or_create(name=f"Chat between Admin and {request.user.username}")
 
@@ -157,7 +178,7 @@ def send_payment_request(request):
 Transaction ID: {transaction_id}
 Amount: ${amount}
 Email: {email}
-Payment Method: {payment_method.upper()}
+Payment Method: {payment_method.upper()} \n
 From: {request.user.username}
 
 Please send QR code for payment."""
@@ -171,26 +192,31 @@ Please send QR code for payment."""
             
 
             # Send to admin via WebSocket if they are online
-        channel_layer = get_channel_layer()
-        room_group_name = f'chat_{conversation.id}'
+        try:
+            channel_layer = get_channel_layer()
+            room_group_name = f'chat_{conversation.id}'
+            
+            async_to_sync(channel_layer.group_send)(
+                room_group_name,
+                {
+                    'type':'chat_message',
+                    'content':payment_message,
+                    'sender_id':request.user.id,
+                    'message_id':message.id,
+                    'timestamp': message.timestamp.isoformat()
+                    }
+                )
+        except Exception as ws_error:
+            # Log WebSocket error but don't fail the payment request
+            print(f"WebSocket error: {ws_error}")
         
-        async_to_sync(channel_layer.group_send)(
-            room_group_name,
-            {
-                'type':'chat_message',
-                'content':payment_message,
-                'sender_id':request.user.id,
-                'message_id':message.id,
-                'timestamp': message.timestamp.isoformat()
-                }
-            )
-        return JsonResponse({
-            'success': True,
-            'transaction_id': transaction_id,
-            })
-        
+        # Success message and redirect
+        messages.success(request, f"Payment request sent successfully! Transaction ID: {transaction_id}")
+        return redirect('chat:chat')    # I want the user to be redirected to the chat when everything is successful
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)})
+        messages.error(request, f"An error occurred: {str(e)}")
+        return redirect('payment:payment')
+    
     
 # Admin Verification View
 @login_required
