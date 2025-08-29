@@ -12,6 +12,11 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        h3{
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
@@ -26,8 +31,8 @@
             <div class="logo">
                 <a href="{% url 'logo' %}">
                     <img src="{% static 'img/shea.jpg' %}" alt="Mrs. Shea">
-                    <span>SheaFunZone</span>
                 </a>
+                <span>SheaFunZone</span>
             </div>
             <div class="nav-links">
                 <a href="{% url 'home:shea_home' %}" class="nav-link"><i class="fas fa-home"></i> Home</a>
@@ -111,9 +116,10 @@
             <div class="footer-section">
                 <h3>Connect With Us</h3>
                 <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <!-- <a href="#"><i class="fab fa-facebook"></i></a> -->
+                    <!-- <a href="#"><i class="fab fa-twitter"></i></a> -->
+                    <!-- <a href="#"><i class="fab fa-instagram"></i></a> -->
+                    <a href="https:/t.me/sheageorge"><i class="fab fa-telegram"></i></a>  <!-- Added this line -->
                     <a href="#"><i class="fab fa-discord"></i></a>
                 </div>
             </div>

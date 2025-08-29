@@ -255,7 +255,7 @@
 <div class="content-wrapper">
     <!-- Hero Section with Main Image -->
     <section class="hero-section">
-        <img class="hero-image" src="{% static 'img/win.webp' %}" alt="Game Hub Banner">
+        <img class="hero-image" src="{% static 'img/panda.jpeg' %}" alt="Game Hub Banner">
         <div class="hero-content">
             <h1 class="hero-title">Welcome to Our Game Hub</h1>
             <p class="hero-subtitle">Play the hottest games and win amazing prizes!</p>
@@ -269,13 +269,13 @@
         </div>
         <div class="promo-content">
             <h2 class="promo-title">Special Limited-Time Offer!</h2>
-            <p class="promo-text">Get double rewards on all your favorite games this week. Don't miss out on this exclusive opportunity to boost your winnings!</p>
-            <a href="#" class="promo-btn">Claim Your Bonus Now</a>
+            <p class="promo-text" style="color: white;">Get double rewards on all your favorite games this week—don’t miss this exclusive chance to boost your winnings; chat with an admin anytime for support.</p>
+            <a href="{% url 'chat:chat' %}" class="promo-btn">Claim Your Bonus Now</a>
         </div>
     </section>
 
     <!-- Gallery Section -->
-    <section class="gallery-section">
+    <!-- <section class="gallery-section">
         <h2 class="gallery-title">Featured Games</h2>
         <div class="gallery">
             {% for game in games %}
@@ -295,7 +295,7 @@
             </div>
             {% endfor %}
         </div>
-    </section>
+    </section> -->
 </div>
 
 <script>
