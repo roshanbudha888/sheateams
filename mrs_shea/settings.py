@@ -182,3 +182,13 @@ LOGIN_REDIRECT_URL = 'home:shea_home'  # Change to your home URL name
 LOGIN_URL = 'accounts:login'
 LOGOUT_REDIRECT_URL = 'home:shea_home'  # Change to your home URL name
 LOGIN_REDIRECT_URL = 'admin_panel:dashboard'  # Change to your home URL name
+
+
+# settings.py
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # or your SMTP server
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'sheafunzone@gmail.com'
+EMAIL_HOST_PASSWORD = 'ualc fmmn vtrg ocsd'
+DEFAULT_FROM_EMAIL = 'sheafunzone@gmail.com'
