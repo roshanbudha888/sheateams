@@ -97,12 +97,18 @@ def send_notification_email(recipient, sender, message, conversation) -> bool:
         subject_prefix = getattr(settings, 'EMAIL_SUBJECT_PREFIX', '')
         subject = f"{subject_prefix}New message from {sender_name}"
         
+        if sender.is_superuser:
+            to_mail = [settings.DEFAULT_FROM_EMAIL]
+        else:
+            to_mail = [recipient.email]
+
+
         # Create and send email
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[recipient.email],
+            to=to_mail,
             headers={
                 'X-Priority': '3',  # Normal priority
                 'X-MSMail-Priority': 'Normal',
