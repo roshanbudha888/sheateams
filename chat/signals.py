@@ -129,8 +129,8 @@ def send_notification_email(recipient, sender, message, conversation) -> bool:
 @receiver(post_save, sender=Message)
 def send_message_notification(sender, instance, created, **kwargs):
     """Send email notifications for new messages."""
-    # if not created:
-    #     return
+    if not created:
+        return
     
     print(f"New message created (ID: {instance.id}), processing notifications...")
     
