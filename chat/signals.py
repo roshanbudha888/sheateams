@@ -121,10 +121,10 @@ def send_notification_email(recipient, sender, message, conversation) -> bool:
         result = email.send()
         
         if result:
-            logger.info(f"Notification sent successfully to {recipient.email} for message {message.id}")
+            print(f"Notification sent successfully to {recipient.email} for message {message.id}")
             return True
         else:
-            logger.warning(f"Failed to send notification to {recipient.email} for message {message.id}")
+            print(f"Failed to send notification to {recipient.email} for message {message.id}")
             return False
         return True 
     
