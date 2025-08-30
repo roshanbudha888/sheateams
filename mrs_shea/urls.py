@@ -27,7 +27,7 @@ urlpatterns = [
     path('', RedirectView.as_view(url='shea_home/', permanent=True), name='root_redirect'),
     # path('', RedirectView.as_view(url='/shea_home/', permanent=True)),
     # path('', RedirectView.as_view(url='shea_home/', permanent=True)),
-    path('shea_home/', include('home.urls', namespace='home')),
+    path('shea-home/', include('home.urls', namespace='home')),
     path('games/', include('games.urls', namespace='games')),
     path('chat/', include('chat.urls', namespace='chat')),
     path('accounts/', include('accounts.urls', namespace='accounts')),
