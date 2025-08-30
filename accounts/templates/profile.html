@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Profile{% endblock %}
 
 {% block extra_css %}
@@ -508,9 +509,10 @@
                 {% if user.profile.profile_picture %}
                     <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="profile-picture" id="profileImage">
                 {% else %}
-                    <div class="default-profile-picture">
+                    <!-- <div class="default-profile-picture">
                         <i class="fas fa-user"></i>
-                    </div>
+                    </div> -->
+                     <img src="{% static 'img/profile.jpg' %}" alt="Default Profile Picture" class="profile-picture" id="profileImage">
                 {% endif %}
             </div>
             
