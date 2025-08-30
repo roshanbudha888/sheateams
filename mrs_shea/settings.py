@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'django.contrib.sites',
     'rest_framework',
     'channels',
     'home',
@@ -190,5 +191,22 @@ EMAIL_HOST = 'smtp.gmail.com'  # or your SMTP server
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'sheafunzone@gmail.com'
-EMAIL_HOST_PASSWORD = 'ualc fmmn vtrg ocsd'
+EMAIL_HOST_PASSWORD = 'kiar kwwb abjv xtzh'
 DEFAULT_FROM_EMAIL = 'sheafunzone@gmail.com'
+
+
+# Your settings.py - KEEP these:
+BASE_DOMAIN = "http://54.225.152.30:8000"
+EMAIL_SUBJECT_PREFIX = 'SheaFunZone '
+SITE_NAME = 'SheaFunZone'
+SUPPORT_EMAIL = 'sheafunzone@gmail.com'
+EMAIL_MESSAGE_ID_DOMAIN = '54.225.152.30:8000'
+
+# REMOVE this line:
+# SITE_ID = 1  ← Delete or comment out this line
+# Optional Django Sites Framework (recommended)
+# SITE_ID = 1  # If using Django sites framework for better domain handling
+
+# settings.py
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# sheafunzone@gmail.com

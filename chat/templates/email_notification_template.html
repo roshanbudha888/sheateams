@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Message Notification</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f5f7fa; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
+    
+    <!-- Wrapper Table -->
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #f5f7fa;">
+        <tr>
+            <td align="center" style="padding: 20px 0;">
+                
+                <!-- Main Container -->
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);">
+                    
+                    <!-- Header Section -->
+                    <tr>
+                        <td style="background-color: #4f46e5; padding: 40px 30px; text-align: center; border-radius: 12px 12px 0 0;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <!-- Icon -->
+                                        <div style="width: 64px; height: 64px; background-color: rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #ffffff;">💬</div>
+                                        
+                                        <!-- Title -->
+                                        <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600; line-height: 1.2;">New Message</h1>
+                                        <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 16px;">You've got mail!</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content Section -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            
+                            <!-- Greeting -->
+                            <p style="margin: 0 0 20px 0; font-size: 18px; color: #1f2937; font-weight: 500;">
+                                Hi {{ recipient.get_full_name|default:recipient.username }}!
+                            </p>
+                            
+                            <p style="margin: 0 0 30px 0; font-size: 16px; color: #6b7280; line-height: 1.5;">
+                                You have received a new message in your conversation.
+                            </p>
+                            
+                            <!-- Message Card -->
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 30px;">
+                                
+                                <!-- Sender Info -->
+                                <tr>
+                                    <td style="padding: 24px;">
+                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                            <tr>
+                                                <td width="56" style="vertical-align: top; padding-right: 16px;">
+                                                    <!-- Avatar -->
+                                                    <div style="width: 48px; height: 48px; background-color: #4f46e5; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: 600; font-size: 18px;">
+                                                        {{ sender.get_full_name.0|default:sender.username.0|upper }}
+                                                    </div>
+                                                </td>
+                                                <td style="vertical-align: top;">
+                                                    <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600; color: #1f2937;">
+                                                        {{ sender.get_full_name|default:sender.username }}
+                                                    </h3>
+                                                    <p style="margin: 0; font-size: 14px; color: #6b7280;">
+                                                        {{ message.timestamp|date:"M d, Y at g:i A" }}
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        
+                                        <!-- Conversation Name -->
+                                        {% if conversation.name %}
+                                        <div style="margin: 16px 0; padding: 8px 16px; background-color: #dbeafe; border-radius: 20px; display: inline-block;">
+                                            <span style="color: #1d4ed8; font-size: 14px; font-weight: 500;">
+                                                📝 {{ conversation.name }}
+                                            </span>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <!-- Message Content -->
+                                        <div style="margin-top: 16px; padding: 20px; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px;">
+                                            {% if message.content|length > 200 %}
+                                                <p style="margin: 0 0 12px 0; font-size: 16px; line-height: 1.5; color: #374151;">
+                                                    {{ message.content|slice:":200" }}...
+                                                </p>
+                                                <p style="margin: 0; font-size: 14px; color: #6b7280; font-style: italic;">
+                                                    Message truncated. Click below to read the full message.
+                                                </p>
+                                            {% else %}
+                                                <p style="margin: 0; font-size: 16px; line-height: 1.5; color: #374151;">
+                                                    {{ message.content|linebreaks }}
+                                                </p>
+                                            {% endif %}
+                                            
+                                            {% if message.image %}
+                                                <p style="margin: 12px 0 0 0; font-size: 14px; color: #6b7280; font-style: italic;">
+                                                    📸 This message includes an image attachment.
+                                                </p>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Call to Action Button -->
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin: 30px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                                <td style="background-color: #4f46e5; border-radius: 6px;">
+                                                    <a href="{{ conversation_url }}" style="display: inline-block; padding: 16px 32px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 16px; font-weight: 600; color: #ffffff; text-decoration: none; border-radius: 6px;">
+                                                        View Conversation
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <p style="margin: 16px 0 0 0; font-size: 14px; color: #6b7280; text-align: center;">
+                                            Click the button above to open your conversation and reply.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer Section -->
+                    <tr>
+                        <td style="background-color: #1f2937; padding: 30px; text-align: center; border-radius: 0 0 12px 12px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <h4 style="margin: 0 0 8px 0; color: #ffffff; font-size: 18px; font-weight: 600;">
+                                            Your Chat App
+                                        </h4>
+                                        <p style="margin: 0 0 20px 0; color: #9ca3af; font-size: 14px;">
+                                            Stay connected with your conversations
+                                        </p>
+                                        
+                                        <!-- Footer Links -->
+                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+                                            <tr>
+                                                <td>
+                                                    <a href="#" style="color: #9ca3af; text-decoration: none; font-size: 13px;">
+                                                        Unsubscribe
+                                                    </a>
+                                                </td>
+                                                <td style="padding: 0 12px; color: #6b7280; font-size: 13px;">|</td>
+                                                <td>
+                                                    <a href="#" style="color: #9ca3af; text-decoration: none; font-size: 13px;">
+                                                        Notification Settings
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                
+                <!-- Mobile Optimization -->
+                <!--[if mso | IE]>
+                </td>
+                </tr>
+                </table>
+                <![endif]-->
+                
+            </td>
+        </tr>
+    </table>
+    
+    <style>
+        /* Mobile Responsive */
+        @media only screen and (max-width: 600px) {
+            .mobile-center { text-align: center !important; }
+            .mobile-padding { padding: 20px !important; }
+            .mobile-font-size { font-size: 24px !important; }
+        }
+        
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            .dark-bg { background-color: #1f2937 !important; }
+            .dark-text { color: #f9fafb !important; }
+        }
+    </style>
+</body>
+</html>
