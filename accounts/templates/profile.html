@@ -3,89 +3,169 @@
 
 {% block extra_css %}
 <style>
-    /* Profile Page Styles */
+    /* Modern Profile Page Styles */
     .profile-container {
-        max-width: 1000px;
+        max-width: 1200px;
         margin: 0 auto;
         padding: 20px;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #16065eff;
+        font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        min-height: calc(100vh - 200px);
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 40px;
+        color: white;
+    }
+
+    .profile-header h1 {
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        font-weight: 800;
+        margin-bottom: 10px;
+        background: linear-gradient(45deg, #fff, #e0e0ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .profile-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 30px;
+        margin-bottom: 30px;
     }
 
     .profile-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 5px 20px rgba(21, 5, 70, 0.9);
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+        position: relative;
         overflow: hidden;
     }
 
-    .profile-title {
-        background: linear-gradient(to right, #081548ff, #050d51ff);
-        color: white;
-        padding: 25px;
-        margin: 0;
+    .profile-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .profile-info-card {
         text-align: center;
-        font-size: 1.8rem;
-    }
-
-    .profile-content {
-        padding: 30px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 30px;
-    }
-
-    .profile-info {
-        flex: 1;
-        min-width: 300px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 20px;
-        border-right: 1px solid #100746ff;
+        justify-content: center;
+    }
+
+    .profile-avatar-container {
+        position: relative;
+        margin-bottom: 25px;
     }
 
     .profile-picture {
-        width: 150px;
-        height: 150px;
+        width: 140px;
+        height: 140px;
         border-radius: 50%;
         object-fit: cover;
-        border: 5px solid #200946ff;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        border: 4px solid #fff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .profile-picture:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
     }
 
     .default-profile-picture {
-        font-size: 150px;
-        color: #160639ff;
-        margin-bottom: 20px;
-    }
-
-    .profile-details {
-        margin-top: 20px;
-        text-align: center;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 60px;
+        margin-bottom: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
 
     .profile-details h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2c3e50;
         margin: 0 0 15px 0;
-        color: #280936ff;
     }
 
-    .profile-details p {
-        margin: 8px 0;
+    .profile-detail-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 12px 0;
+        padding: 8px 16px;
+        background: rgba(103, 126, 234, 0.05);
+        border-radius: 12px;
+        border-left: 3px solid #667eea;
+    }
+
+    .profile-detail-item i {
+        margin-right: 10px;
+        color: #667eea;
+        width: 20px;
+        text-align: center;
+    }
+
+    .profile-detail-item strong {
+        color: #2c3e50;
+        margin-right: 8px;
+    }
+
+    .profile-detail-item span {
         color: #555;
     }
 
-    .profile-details strong {
-        color: #4a6cf7;
+    .form-section {
+        position: relative;
     }
 
-    .profile-form {
-        flex: 2;
-        min-width: 300px;
+    .form-section h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0 0 25px 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-section h3 i {
+        margin-right: 10px;
+        color: #667eea;
     }
 
     .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 25px;
+        position: relative;
     }
 
     .form-group label {
@@ -93,130 +173,310 @@
         margin-bottom: 8px;
         font-weight: 600;
         color: #2c3e50;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
     }
 
-    .form-group input,
-    .form-group textarea {
+    .form-group label i {
+        margin-right: 8px;
+        color: #667eea;
+        width: 16px;
+    }
+
+    .form-control {
         width: 100%;
-        padding: 12px 15px;
-        border: 1px solid #af1919ff;
-        border-radius: 6px;
+        padding: 15px 20px;
+        border: 2px solid #e1e8ed;
+        border-radius: 12px;
         font-size: 16px;
-        transition: all 0.3s;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.8);
+        font-family: inherit;
     }
 
-    .form-group input:focus,
-    .form-group textarea:focus {
-        border-color: #4a6cf7;
-        box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
         outline: none;
+        background: rgba(255, 255, 255, 1);
     }
 
-    .form-group textarea {
-        min-height: 100px;
+    .form-control:hover {
+        border-color: #667eea;
+    }
+
+    .form-control[type="file"] {
+        padding: 12px;
+        border: 2px dashed #667eea;
+        background: rgba(102, 126, 234, 0.02);
+        cursor: pointer;
+    }
+
+    .form-control[type="file"]:hover {
+        background: rgba(102, 126, 234, 0.05);
+    }
+
+    .form-control[type="date"] {
+        color: #555;
+    }
+
+    .form-control::placeholder {
+        color: #999;
+        font-style: italic;
+    }
+
+    textarea.form-control {
+        min-height: 120px;
         resize: vertical;
-    }
-
-    input[type="file"] {
-        padding: 8px;
-        border: 1px dashed #be9a9aff;
-        background-color: #f9f9f9;
+        font-family: inherit;
     }
 
     .profile-btn {
-        background: linear-gradient(to right, #112ea2ff, #040b48ff);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        padding: 12px 25px;
-        border-radius: 6px;
+        padding: 16px 32px;
+        border-radius: 12px;
         font-size: 16px;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.3s ease;
         width: 100%;
         margin-top: 10px;
+        position: relative;
+        overflow: hidden;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .profile-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.6s;
+    }
+
+    .profile-btn:hover::before {
+        left: 100%;
     }
 
     .profile-btn:hover {
-        opacity: 0.9;
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(74, 108, 247, 0.2);
+        box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .profile-btn:active {
+        transform: translateY(0);
+    }
+
+    .profile-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Messages */
+    .messages-container {
+        margin-bottom: 30px;
     }
 
     .message {
-        padding: 15px;
-        margin: 20px 0;
-        border-radius: 6px;
+        padding: 16px 20px;
+        margin: 15px 0;
+        border-radius: 12px;
         font-weight: 500;
+        display: flex;
+        align-items: center;
+        animation: slideIn 0.3s ease;
+    }
+
+    .message i {
+        margin-right: 12px;
+        font-size: 18px;
     }
 
     .message.success {
-        background-color: #180963ff;
+        background: linear-gradient(135deg, #d4edda, #c3e6cb);
         color: #155724;
-        border: 1px solid #c3e6cb;
+        border-left: 4px solid #28a745;
     }
 
     .message.error {
-        background-color: #f8d7da;
+        background: linear-gradient(135deg, #f8d7da, #f5c6cb);
         color: #721c24;
-        border: 1px solid #f5c6cb;
+        border-left: 4px solid #dc3545;
     }
 
     .message.info {
-        background-color: #d1ecf1;
+        background: linear-gradient(135deg, #d1ecf1, #bee5eb);
         color: #0c5460;
-        border: 1px solid #bee5eb;
+        border-left: 4px solid #17a2b8;
     }
 
     .message.warning {
-        background-color: #fff3cd;
+        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
         color: #856404;
-        border: 1px solid #ffeaa7;
+        border-left: 4px solid #ffc107;
     }
 
     /* Image Preview */
     .image-preview {
-        margin-top: 10px;
+        margin-top: 15px;
         display: none;
+        text-align: center;
     }
 
     .image-preview img {
-        max-width: 150px;
-        max-height: 150px;
-        border-radius: 6px;
-        border: 1px solid #ddd;
-        margin-top: 10px;
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 12px;
+        border: 2px solid #e1e8ed;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .image-preview img:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Loading State */
+    .loading {
+        position: relative;
+    }
+
+    .loading::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        margin: auto;
+        border: 2px solid transparent;
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: spin 1s ease infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     /* Responsive Design */
+    @media (max-width: 1024px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        
+        .profile-info-card {
+            order: -1;
+        }
+    }
+
     @media (max-width: 768px) {
-        .profile-content {
-            flex-direction: column;
+        .profile-container {
+            padding: 15px;
         }
         
-        .profile-info {
-            border-right: none;
-            border-bottom: 1px solid #170746ff;
-            padding-bottom: 30px;
+        .profile-card {
+            padding: 20px;
         }
         
-        .profile-form {
-            padding-top: 30px;
+        .profile-picture, .default-profile-picture {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .default-profile-picture {
+            font-size: 50px;
+        }
+        
+        .profile-details h2 {
+            font-size: 1.5rem;
+        }
+        
+        .form-control {
+            padding: 12px 16px;
+            font-size: 16px;
         }
     }
 
     @media (max-width: 480px) {
-        .profile-container {
-            padding: 10px;
+        .profile-card {
+            padding: 15px;
+            border-radius: 16px;
         }
         
-        .profile-content {
-            padding: 15px;
+        .profile-picture, .default-profile-picture {
+            width: 100px;
+            height: 100px;
         }
         
-        .profile-title {
-            padding: 15px;
-            font-size: 1.5rem;
+        .default-profile-picture {
+            font-size: 40px;
+        }
+        
+        .form-control {
+            padding: 10px 12px;
+        }
+        
+        .profile-btn {
+            padding: 14px 24px;
+            font-size: 14px;
+        }
+        
+        .profile-detail-item {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .profile-detail-item i {
+            margin-bottom: 5px;
+        }
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        .profile-card {
+            background: rgba(30, 30, 30, 0.95);
+            color: #e1e1e1;
+        }
+        
+        .profile-details h2,
+        .form-section h3,
+        .form-group label {
+            color: #e1e1e1;
+        }
+        
+        .profile-detail-item {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-control {
+            background: rgba(40, 40, 40, 0.8);
+            color: #e1e1e1;
+            border-color: #444;
+        }
+        
+        .form-control:focus {
+            background: rgba(40, 40, 40, 1);
         }
     }
 </style>
@@ -224,78 +484,145 @@
 
 {% block content %}
 <div class="profile-container">
-    <div class="profile-card">
-        <h1 class="profile-title">Profile</h1>
-        
-        <!-- Django messages -->
-        {% if messages %}
+    <div class="profile-header">
+        <h1>User Profile</h1>
+        <p>Manage your account information and preferences</p>
+    </div>
+    
+    <!-- Django messages -->
+    {% if messages %}
+        <div class="messages-container">
             {% for message in messages %}
                 <div class="message {{ message.tags }}">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}times-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
                     {{ message }}
                 </div>
             {% endfor %}
-        {% endif %}
-        
-        <div class="profile-content">
-            <div class="profile-info">
+        </div>
+    {% endif %}
+    
+    <div class="profile-grid">
+        <!-- Profile Information Display -->
+        <div class="profile-card profile-info-card" style="max-height: 476px;">
+            <div class="profile-avatar-container">
                 {% if user.profile.profile_picture %}
                     <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="profile-picture" id="profileImage">
                 {% else %}
                     <div class="default-profile-picture">
-                        <i class="fas fa-user-circle"></i>
+                        <i class="fas fa-user"></i>
                     </div>
                 {% endif %}
-                
-                <div class="profile-details">
-                    <h2>{{ user.username }}</h2>
-                    <p><strong>Email:</strong> {{ user.email }}</p>
-                    {% if user.profile.bio %}<p><strong>Bio:</strong> {{ user.profile.bio }}</p>{% endif %}
-                    {% if user.profile.location %}<p><strong>Location:</strong> {{ user.profile.location }}</p>{% endif %}
-                    {% if user.profile.birth_date %}<p><strong>Birth Date:</strong> {{ user.profile.birth_date }}</p>{% endif %}
-                </div>
             </div>
             
-            <form method="post" enctype="multipart/form-data" class="profile-form">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label>Username</label>
-                    {{ u_form.username }}
+            <div class="profile-details">
+                <h2>{{ user.username }}</h2>
+                
+                <div class="profile-detail-item">
+                    <i class="fas fa-envelope"></i>
+                    <strong>Email:</strong>
+                    <span>{{ user.email|default:"Not provided" }}</span>
                 </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    {{ u_form.email }}
+                
+                {% if user.profile.bio %}
+                <div class="profile-detail-item">
+                    <i class="fas fa-quote-left"></i>
+                    <strong>Bio:</strong>
+                    <span>{{ user.profile.bio }}</span>
                 </div>
-                <div class="form-group">
-                    <label>Bio</label>
-                    {{ p_form.bio }}
+                {% endif %}
+                
+                {% if user.profile.location %}
+                <div class="profile-detail-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <strong>Location:</strong>
+                    <span>{{ user.profile.location }}</span>
                 </div>
-                <div class="form-group">
-                    <label>Location</label>
-                    {{ p_form.location }}
+                {% endif %}
+                
+                {% if user.profile.birth_date %}
+                <div class="profile-detail-item">
+                    <i class="fas fa-birthday-cake"></i>
+                    <strong>Birth Date:</strong>
+                    <span>{{ user.profile.birth_date }}</span>
                 </div>
-                <div class="form-group">
-                    <label>Birth Date</label>
-                    {{ p_form.birth_date }}
+                {% endif %}
+                
+                <div class="profile-detail-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <strong>Member Since:</strong>
+                    <span>{{ user.date_joined|date:"M d, Y" }}</span>
                 </div>
-                <div class="form-group">
-                    <label>Profile Picture</label>
-                    {{ p_form.profile_picture }}
-                    <div class="image-preview" id="imagePreview">
-                        <img src="" alt="Image Preview">
+            </div>
+        </div>
+        
+        <!-- Profile Update Form -->
+        <div class="profile-card">
+            <div class="form-section">
+                <h3><i class="fas fa-edit"></i>Edit Profile</h3>
+                
+                <form method="post" enctype="multipart/form-data" class="profile-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="{{ u_form.username.id_for_label }}">
+                            <i class="fas fa-user"></i>Username
+                        </label>
+                        <input type="text" name="{{ u_form.username.html_name }}" value="{{ u_form.username.value|default_if_none:'' }}" class="form-control" id="{{ u_form.username.id_for_label }}" placeholder="Enter your username">
                     </div>
-                </div>
-                <button type="submit" class="profile-btn">Update Profile</button>
-            </form>
+                    
+                    <div class="form-group">
+                        <label for="{{ u_form.email.id_for_label }}">
+                            <i class="fas fa-envelope"></i>Email Address
+                        </label>
+                        <input type="email" name="{{ u_form.email.html_name }}" value="{{ u_form.email.value|default_if_none:'' }}" class="form-control" id="{{ u_form.email.id_for_label }}" placeholder="Enter your email address">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ p_form.bio.id_for_label }}">
+                            <i class="fas fa-quote-left"></i>Bio
+                        </label>
+                        <textarea name="{{ p_form.bio.html_name }}" class="form-control" id="{{ p_form.bio.id_for_label }}" placeholder="Tell us something about yourself..." rows="4">{{ p_form.bio.value|default_if_none:'' }}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ p_form.location.id_for_label }}">
+                            <i class="fas fa-map-marker-alt"></i>Location
+                        </label>
+                        <input type="text" name="{{ p_form.location.html_name }}" value="{{ p_form.location.value|default_if_none:'' }}" class="form-control" id="{{ p_form.location.id_for_label }}" placeholder="Where are you located?">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ p_form.birth_date.id_for_label }}">
+                            <i class="fas fa-birthday-cake"></i>Birth Date
+                        </label>
+                        <input type="date" name="{{ p_form.birth_date.html_name }}" value="{{ p_form.birth_date.value|default_if_none:'' }}" class="form-control" id="{{ p_form.birth_date.id_for_label }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ p_form.profile_picture.id_for_label }}">
+                            <i class="fas fa-camera"></i>Profile Picture
+                        </label>
+                        <input type="file" name="{{ p_form.profile_picture.html_name }}" class="form-control" id="{{ p_form.profile_picture.id_for_label }}" accept="image/*">
+                        <div class="image-preview" id="imagePreview">
+                            <img src="" alt="Image Preview">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="profile-btn" id="submitBtn">
+                        <i class="fas fa-save"></i> Update Profile
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
 
-{% block extra_js %}
+{% block extra_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Image preview functionality
-        const profilePictureInput = document.querySelector('input[type="file"]');
+        const profilePictureInput = document.getElementById('{{ p_form.profile_picture.id_for_label }}');
         const imagePreview = document.getElementById('imagePreview');
         const previewImage = imagePreview.querySelector('img');
         const profileImage = document.getElementById('profileImage');
@@ -305,13 +632,27 @@
                 const file = this.files[0];
                 
                 if (file) {
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please select a valid image file.');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    // Validate file size (5MB limit)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('File size must be less than 5MB.');
+                        this.value = '';
+                        return;
+                    }
+                    
                     const reader = new FileReader();
                     
                     reader.addEventListener('load', function() {
                         previewImage.src = reader.result;
                         imagePreview.style.display = 'block';
                         
-                        // Also update the main profile image preview
+                        // Update the main profile image preview
                         if (profileImage) {
                             profileImage.src = reader.result;
                         }
@@ -324,26 +665,84 @@
             });
         }
         
-        // Add form validation and better UX
+        // Form submission handling
         const form = document.querySelector('.profile-form');
+        const submitBtn = document.getElementById('submitBtn');
         
         if (form) {
             form.addEventListener('submit', function(e) {
-                // You can add form validation here if needed
-                const submitButton = this.querySelector('button[type="submit"]');
-                submitButton.textContent = 'Updating...';
-                submitButton.disabled = true;
+                // Basic validation
+                const username = document.getElementById('{{ u_form.username.id_for_label }}').value.trim();
+                const email = document.getElementById('{{ u_form.email.id_for_label }}').value.trim();
                 
-                // Form would submit normally, this is just for visual feedback
+                if (!username) {
+                    e.preventDefault();
+                    alert('Username is required.');
+                    return;
+                }
+                
+                if (!email) {
+                    e.preventDefault();
+                    alert('Email is required.');
+                    return;
+                }
+                
+                // Email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    e.preventDefault();
+                    alert('Please enter a valid email address.');
+                    return;
+                }
+                
+                // Show loading state
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+                submitBtn.disabled = true;
+                submitBtn.classList.add('loading');
             });
         }
         
-        // Add classes to form inputs for better styling
-        const formInputs = document.querySelectorAll('.profile-form input, .profile-form textarea');
-        
-        formInputs.forEach(input => {
-            input.classList.add('form-control');
+        // Auto-hide messages after 5 seconds
+        const messages = document.querySelectorAll('.message');
+        messages.forEach(message => {
+            setTimeout(() => {
+                message.style.opacity = '0';
+                message.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    message.remove();
+                }, 300);
+            }, 5000);
         });
+        
+        // Add smooth focus transitions
+        const formControls = document.querySelectorAll('.form-control');
+        formControls.forEach(control => {
+            control.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            control.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+        
+        // Character counter for bio
+        const bioTextarea = document.getElementById('{{ p_form.bio.id_for_label }}');
+        if (bioTextarea) {
+            const maxLength = 500; // Adjust as needed
+            const counter = document.createElement('div');
+            counter.style.cssText = 'font-size: 12px; color: #999; text-align: right; margin-top: 5px;';
+            bioTextarea.parentElement.appendChild(counter);
+            
+            function updateCounter() {
+                const remaining = maxLength - bioTextarea.value.length;
+                counter.textContent = `${bioTextarea.value.length}/${maxLength} characters`;
+                counter.style.color = remaining < 50 ? '#ff6b6b' : '#999';
+            }
+            
+            bioTextarea.addEventListener('input', updateCounter);
+            updateCounter();
+        }
     });
 </script>
 {% endblock %}

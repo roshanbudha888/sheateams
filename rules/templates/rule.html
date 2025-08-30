@@ -1,22 +1,405 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/rule.css' %}">
-<body>
+<style>
+    .rules-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        min-height: calc(100vh - 200px);
+    }
 
-    <div class="rules-page">
-        <div class="rules-header">
-            <h1 class="rules-title">Game Rules & Guidelines</h1>
-            <p class="rules-subtitle">To ensure a fair and enjoyable experience for all players, please review and follow our community rules and guidelines</p>
-        </div>
+    .rules-header {
+        text-align: center;
+        margin-bottom: 40px;
+        color: white;
+    }
+
+    .rules-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        background: linear-gradient(45deg, #fff, #e0e0ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .rules-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .back-button {
+        display: inline-block;
+        padding: 12px 24px;
+        background: rgba(255,255,255,0.1);
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        margin-bottom: 30px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+
+    .back-button:hover {
+        background: rgba(255,255,255,0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        color: white;
+        text-decoration: none;
+    }
+
+    .rules-container {
+        display: grid;
+        gap: 30px;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+
+    .rule-card {
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.3);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .rule-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    .rule-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .card-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-right: 15px;
+        color: white;
+    }
+
+    .bonus-icon { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .freeplay-icon { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+    .cashout-icon { background: linear-gradient(135deg, #fa709a, #fee140); }
+    .support-icon { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .rule-item {
+        display: flex;
+        align-items: flex-start;
+        margin: 15px 0;
+        padding: 12px;
+        background: rgba(103, 126, 234, 0.05);
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+    }
+
+    .rule-bullet {
+        color: #667eea;
+        font-weight: bold;
+        margin-right: 10px;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .rule-text {
+        flex: 1;
+    }
+
+    .highlight {
+        background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .warning {
+        background: rgba(255, 107, 107, 0.1);
+        border-left-color: #ff6b6b;
+        border: 1px solid rgba(255, 107, 107, 0.2);
+    }
+
+    .warning .rule-bullet {
+        color: #ff6b6b;
+    }
+
+    .special-offer {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-align: center;
+        padding: 30px;
+        border-radius: 20px;
+        margin-top: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .special-offer::before {
+        content: '✨';
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 30px;
+        animation: sparkle 2s ease-in-out infinite;
+    }
+
+    @keyframes sparkle {
+        0%, 100% { transform: scale(1) rotate(0deg); }
+        50% { transform: scale(1.1) rotate(180deg); }
+    }
+
+    .offer-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .offer-text {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .rules-image-section {
+        margin-top: 40px;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .rules-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+        border: 2px solid rgba(255,255,255,0.1);
+    }
+
+    .rules-image:hover {
+        transform: scale(1.02);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    }
+
+    @media (max-width: 768px) {
+        .rules-page {
+            padding: 15px;
+        }
         
-        <div class="rules-hero">
-            <!-- Image with working source -->
-            <img src="{% static 'img/rule.jpg' %}" alt="Game Rules">
-          </div> 
+        .rule-card {
+            padding: 20px;
+        }
+        
+        .rules-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .card-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .card-icon {
+            margin-right: 0;
+            margin-bottom: 10px;
+        }
+    }
 
-         <div class="rules">
-            <a href="{% url 'home:shea_home' %}" class="rule-section:hover">Back to Home</a>
+    @media (max-width: 480px) {
+        .rule-item {
+            flex-direction: column;
+        }
+        
+        .rule-bullet {
+            margin-bottom: 5px;
+        }
+    }
+</style>
+
+<div class="rules-page">
+    <div class="rules-header">
+        <h1 class="rules-title">Game Rules & Guidelines</h1>
+        <p class="rules-subtitle">To ensure a fair and enjoyable experience for all players, please review and follow our community rules and guidelines</p>
+    </div>
+    
+    <a href="{% url 'home:shea_home' %}" class="back-button">← Back to Home</a>
+    
+    <div class="rules-container">
+        <!-- Bonus Rules Card -->
+        <div class="rule-card">
+            <div class="card-header">
+                <div class="card-icon bonus-icon">🎁</div>
+                <h2 class="card-title">Bonus System</h2>
             </div>
-</body>
+            
+            <div class="rule-item">
+                <span class="rule-bullet">•</span>
+                <div class="rule-text">
+                    <span class="highlight">100% Sign-up Bonus</span> - Double your initial deposit
+                </div>
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-bullet">•</span>
+                <div class="rule-text">
+                    <span class="highlight">100% Referral Bonus</span> - Earn when friends join
+                </div>
+            </div>
+            
+            <div class="rule-item warning">
+                <span class="rule-bullet">⚠</span>
+                <div class="rule-text">
+                    Only <strong>50% of total bonus amount</strong> will be paid out
+                </div>
+            </div>
+        </div>
+
+        <!-- Freeplay Rules Card -->
+        <div class="rule-card">
+            <div class="card-header">
+                <div class="card-icon freeplay-icon">🎮</div>
+                <h2 class="card-title">Freeplay Rules</h2>
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-bullet">•</span>
+                <div class="rule-text">
+                    Minimum & Maximum: <span class="highlight">$20</span>
+                </div>
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-bullet">•</span>
+                <div class="rule-text">
+                    Payout rate: <span class="highlight">40%</span> of freeplay amount
+                </div>
+            </div>
+        </div>
+
+        <!-- Cashout Rules Card -->
+        <div class="rule-card">
+            <div class="card-header">
+                <div class="card-icon cashout-icon">💰</div>
+                <h2 class="card-title">Cashout System</h2>
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-bullet">•</span>
+                <div class="rule-text">
+                    Minimum deposit: <span class="highlight">$5</span>
+                </div>
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-bullet">•</span>
+                <div class="rule-text">
+                    Cashout for <strong>$5-$10 deposits</strong>: <span class="highlight">$30 maximum</span>
+                </div>
+            </div>
+            
+            <div class="rule-item warning">
+                <span class="rule-bullet">⚠</span>
+                <div class="rule-text">
+                    Anything above $30 will be <strong>voided</strong> for small deposits
+                </div>
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-bullet">•</span>
+                <div class="rule-text">
+                    For deposits <strong>above $10</strong>:
+                    <br>• Minimum cashout: <span class="highlight">4x deposit</span>
+                    <br>• Maximum cashout: <span class="highlight">12x deposit</span>
+                </div>
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-bullet">•</span>
+                <div class="rule-text">
+                    Daily cashout limit: <span class="highlight">UNLIMITED</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support & Safety Card -->
+        <div class="rule-card">
+            <div class="card-header">
+                <div class="card-icon support-icon">🛡️</div>
+                <h2 class="card-title">Player Support</h2>
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-bullet">•</span>
+                <div class="rule-text">
+                    <strong>Loss Protection:</strong> Lose $100+ in a day?
+                </div>
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-bullet">•</span>
+                <div class="rule-text">
+                    Get <span class="highlight">$10 cash back</span> automatically
+                </div>
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-bullet">•</span>
+                <div class="rule-text">
+                    24/7 customer support available
+                </div>
+            </div>
+            
+            <div class="rule-item">
+                <span class="rule-bullet">•</span>
+                <div class="rule-text">
+                    Fair play guarantee for all games
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="special-offer">
+        <h3 class="offer-title">Ready to Play?</h3>
+        <p class="offer-text">Join thousands of players and start winning today!</p>
+    </div>
+    
+    <!-- Rules Image Section -->
+    <div class="rules-image-section">
+        <img src="{% static 'img/rule.jpg' %}" alt="Game Rules" class="rules-image">
+    </div>
+</div>
 {% endblock %}
