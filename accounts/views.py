@@ -3,6 +3,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from .models import Profile
 
 def login_view(request):
     if request.method == 'POST':
@@ -45,6 +46,13 @@ def logout_view(request):
 def profile_view(request):
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)
+
+        try:
+            if not Profile.objects.filter(user = request.user).exists():
+                Profile.objects.create(user=request.user)
+        except:
+            pass
+
         p_form = ProfileUpdateForm(
             request.POST, 
             request.FILES, 
