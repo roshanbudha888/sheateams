@@ -507,12 +507,15 @@
         <div class="profile-card profile-info-card" style="max-height: 476px;">
             <div class="profile-avatar-container">
                 {% if user.profile.profile_picture %}
-                    <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="profile-picture" id="profileImage">
-                {% else %}
-                    <!-- <div class="default-profile-picture">
+                    <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="profile-picture" id="profileImage" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="default-profile-picture" style="display: none;">
                         <i class="fas fa-user"></i>
-                    </div> -->
-                     <img src="{% static 'img/profile.jpg' %}" alt="Default Profile Picture" class="profile-picture" id="profileImage">
+                    </div>
+                {% else %}
+                    <img src="{% static 'img/profile.jpg' %}" alt="Default Profile Picture" class="profile-picture" id="profileImage" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="default-profile-picture" style="display: none;">
+                        <i class="fas fa-user"></i>
+                    </div>
                 {% endif %}
             </div>
             
