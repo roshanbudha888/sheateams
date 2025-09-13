@@ -211,6 +211,8 @@ EMAIL_MESSAGE_ID_DOMAIN = '54.225.152.30:8000'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # sheafunzone@gmail.com
 
+SITE_ID = 1
+
 
 CSRF_TRUSTED_ORIGINS = [
     'https://sheafunzone.com',
